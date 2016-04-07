@@ -6,9 +6,9 @@
         Slot[] slots;
         bool enabled;
         /* 
-         * Two dimension array first with coordinates { latitude, longitude }
-         * second with { numbers, decimals}
-         */
+        Two dimension array first with coordinates { latitude, longitude }
+        second with { numbers, decimals}
+        */
         int16[2][2] location;
         address owner;
     }
@@ -19,19 +19,26 @@
         address parker;
     }
     
-    // Owner and controller of this contract.
-    address controller;
+    /* 
+    This state variable will be assigned at the construction
+    controller = owner of this contract can be changed by owner himself.
+    */
+    address controller = msg.sender;
     
-    // Mapped state variable for (value = balance, key = address).
-    mapping (address => uint) balances;
+    /* 
+    Mapped state variable for (value = balance, key = address)
+    only visiable for contract internal.
+    */
+    mapping (address => uint) private balances;
+    
     /*
-     * Mapped public state variable for (value = Place, key = name)
-     * with auto-generated accessor function.
-     */
-    mapping (bytes32 => Place) public places;
+    Mapped public state variable for (value = Place, key = name)
+    with auto-generated accessor function.
+    */
+    mapping (bytes32 => Place) places;
     
     // Validate if executed by controller. 
-    modifier isController() { 
+    modifier only_controller() { 
         if (msg.sender != controller) { 
             throw; 
             _ 
@@ -39,7 +46,7 @@
     } 
     
     // Validate if executed by owner of place `name`. 
-    modifier isPlaceOwner(bytes32 name) { 
+    modifier only_placeowner(bytes32 name) { 
         if (msg.sender != places[name].owner) { 
             throw; 
             _ 
@@ -47,7 +54,7 @@
     } 
     
     // Validate if `reservedBlock` is at least 50 blocks in future. 
-    modifier isFuture(uint reservedBlock) { 
+    modifier only_future(uint reservedBlock) { 
         if (reservedBlock > block.number + 50) { 
             throw; 
             _ 
@@ -55,7 +62,7 @@
     } 
     
     // Validate if place `name` is enabled. 
-    modifier isEnabled(bytes32 name) { 
+    modifier only_enabled(bytes32 name) { 
         if (places[name].enabled != true) { 
             throw; 
             _ 
@@ -63,7 +70,7 @@
     }
     
     // Validate if place `name` is valid and does not exists. 
-    modifier exists(bytes32 name) { 
+    modifier only_existing(bytes32 name) { 
         if (places[name].name != 0 && name != "") { 
             throw; 
             _ 
@@ -71,16 +78,21 @@
     } 
     
     // Event for updated place `name` notifying clients and connected dapps.
-    event placeUpdated(bytes32 name);
+    event PlaceUpdated(bytes32 name);
     
     /* 
-     * Event for reservation on place `name` for `address` 
-     * until `reservedBlock` notifying clients and connected dapps.
-     */
-    event slotReservation(bytes32 name, address parker, uint reservedBlock);
+    Event for reservation on place `name` for `address` 
+    until `reservedBlock` notifying clients and connected dapps.
+    */
+    event SlotReservation(bytes32 name, address parker, uint reservedBlock);
     
-    /// Gets next free slot `sid` on place `name` or throw if no slots free. 
-    function GetNextFreeSlot(bytes32 name) exists(name) returns (uint sid) { 
+    /* 
+    Gets next free slot `sid` on place `name` or throw if no slots free
+    only visible for contract internal.
+    */
+    function GetNextFreeSlot(bytes32 name) private only_existing(name) 
+        returns (uint sid) 
+    { 
         for (uint i = 0; i < places[name].slots.length; i++) { 
             if (places[name].slots[i].reservedBlock <= block.number) {
                 return i;
@@ -90,28 +102,29 @@
     } 
     
     /// Create contract without parking places.
-    function ParkingPlaces() isController {}
+    function ParkingPlaces() {}
     
-    /// Change contract controller.
-    function ChangeController(address _controller) isController {
-        controller = _controller;
+    /// Change contract controller to `newController`.
+    function ChangeController(address newController) only_controller {
+        controller = newController;
     }
     
     /// Create a parking reservation for place `name` until `reservedBlock`.
     function ReserveSlot(bytes32 name, uint reservedBlock) 
-        isFuture(reservedBlock)
-        isEnabled(name) 
+        only_future(reservedBlock)
+        only_enabled(name) 
     {
         uint sid = GetNextFreeSlot(name);
         uint amount = (reservedBlock - block.number) * 10 finney;
         PayReservation(name, amount);
         places[name].slots[sid].parker = msg.sender;
         places[name].slots[sid].reservedBlock = reservedBlock;
-        slotReservation(name, msg.sender, reservedBlock);
+        // Triggering event that client and dapps can updating their MVC.
+        SlotReservation(name, msg.sender, reservedBlock);
     }
     
-    // Pay for reservation at place `name`.
-    function PayReservation(bytes32 name, uint value) internal {
+    // Pay for reservation at place `name` only visible for contract internal.
+    function PayReservation(bytes32 name, uint value) private {
         // Check if the sender has enough. 
         if (balances[msg.sender] < value) {
             throw;
@@ -128,31 +141,33 @@
         balances[places[name].owner] += value;
     }
     
-    /// Update coordinates `_location` for parking place `name`.
-    function UpdatePlaceLocation(bytes32 name, int16[2][2] _location) 
-        isPlaceOwner(name) 
-        exists(name) 
+    /// Update coordinates `newLocation` for parking place `name`.
+    function UpdatePlaceLocation(bytes32 name, int16[2][2] newLocation) 
+        only_placeowner(name) 
+        only_existing(name) 
     {
-        places[name].location = _location;
-        placeUpdated(name);
+        places[name].location = newLocation;
+        // Triggering event that client and dapps can updating their MVC.
+        PlaceUpdated(name);
     }
     
     /// Add a parking place `name` at coordinates `location` for `owner`.
     function AddPlace(bytes32 name, int16[2][2] location, address owner) 
-        isController 
-        exists(name) 
+        only_controller 
+        only_existing(name) 
     {
         places[name].name = name;
         places[name].enabled = false;
         places[name].location = location;
         places[name].owner = owner;
-        placeUpdated(name);
+        // Triggering event that client and dapps can updating their MVC.
+        PlaceUpdated(name);
     }
     
     /// Add `amount` slots to parking place `name`.
     function AddSlots(bytes32 name, uint amount) 
-        isPlaceOwner(name) 
-        exists(name) 
+        only_placeowner(name) 
+        only_existing(name) 
     {
         for (uint i = 0; i < amount; i++) {
             places[name].slots.push(Slot(block.number, msg.sender));
@@ -160,22 +175,32 @@
     }
     
     /// Disable (open) parking place `name`.
-    function DisablePlace(bytes32 name) isPlaceOwner(name) exists(name) { 
+    function DisablePlace(bytes32 name) 
+        only_placeowner(name) 
+        only_existing(name) 
+    { 
         places[name].enabled = false; 
-        placeUpdated(name);
+        // Triggering event that client and dapps can updating their MVC.
+        PlaceUpdated(name);
     }
     
     /// Enable (close) parking place `name`.
-    function EnablePlace(bytes32 name) isPlaceOwner(name) exists(name) { 
+    function EnablePlace(bytes32 name) 
+        only_placeowner(name) 
+        only_existing(name) 
+    { 
         places[name].enabled = true; 
-        placeUpdated(name);
+        // Triggering event that client and dapps can updating their MVC.
+        PlaceUpdated(name);
     }
     
-    // Fallback for invalid date or ether without data reverts transaction.
-    function () { throw; }
+    // Fallback for invalid date or ether without data and reverts the tx.
+    function () { 
+        throw; 
+    }
 
     /// Close this contract and sends remaining funds back to creator.
-    function close() isController {
-        suicide(controller);  
+    function close() only_controller {
+        selfdestruct(controller);  
     }
 }
