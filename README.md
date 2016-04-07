@@ -10,8 +10,9 @@ This contract was developed with online compiler and connected to docker contain
 
 > (Web3 Provider `http://geth:8545`)
 
-### Web3 deploy
 The paths depending on docker container containing the files too. *(link below)*
+
+### Web3 deploy
 
 1. connect to JavaScript console of running Ethereum client: `geth attach`
 2. create contract account from javascript `loadScript('/home/geth/contracts/ParkingPlaces.js');`
