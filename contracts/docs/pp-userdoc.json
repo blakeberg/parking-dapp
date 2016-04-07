@@ -1,0 +1,32 @@
+
+======= ParkingPlaces =======
+User Documentation
+{
+   "methods" : {
+      "AddPlace(bytes32,int16[2][2],address)" : {
+         "notice" : "Add a diabled parking place without slots."
+      },
+      "AddSlots(bytes32,uint256)" : {
+         "notice" : "Adds slots with defaults (owner, block.number)."
+      },
+      "ChangeController(address)" : {
+         "notice" : "Change controller that can add places or close this contract."
+      },
+      "DisablePlace(bytes32)" : {
+         "notice" : "Disable parking place for new reservations."
+      },
+      "EnablePlace(bytes32)" : {
+         "notice" : "Enable parking place for reservations."
+      },
+      "ReserveSlot(bytes32,uint256)" : {
+         "notice" : "Create a parking reservation for 10 finney per block (min 50)."
+      },
+      "UpdatePlaceLocation(bytes32,int24[2][2])" : {
+         "notice" : "Update coordinates (lat: [0][0].[0][1], long: [1][0].[1][1])."
+      },
+      "close()" : {
+         "notice" : "Close this contract but place owner still holding their funds."
+      }
+   }
+}
+
