@@ -1,43 +1,60 @@
-﻿contract ParkingPlaces { 
+﻿/** 
+ * @title Contract for parking places and slot reservation.
+ * @author bjoern.lakeberg@technik-emden.de
+ */
+contract ParkingPlaces { 
     
     // Located named parking place with slots and owner.
     struct Place {
-        bytes32 name; 
-        Slot[] slots;
+        // Only on enabled places slots can be reserved.
         bool enabled;
-        /* 
-        Two dimension array first with coordinates { latitude, longitude }
-        second with { numbers, decimals}
-        */
-        int16[2][2] location;
+        // Unique name will be checked in functions by modifier.
+        bytes32 name; 
+        // Owner that can add slots to place or enable/disable it.
         address owner;
+        /* 
+         * Two dimension array first with coordinates { latitude, longitude }
+         * second with { numbers, decimals}
+         */
+        int24[2][2] location;
+        // Dynamically-sized array for slots on a parking place.
+        Slot[] slots;
     }
     
     // Single slot on parking place reserved until `reservedBlock` by `parker`.
     struct Slot {
-        uint reservedBlock;
+        // parker on slot initially the place owner
         address parker;
+        // slot reserved until this block initially the block of its creation.
+        uint reservedBlock;
     }
     
-    /* 
-    This state variable will be assigned at the construction
-    controller = owner of this contract can be changed by owner himself.
-    */
+    /**
+     * @notice Controller of the contract can add places for other, kill this
+     * contract and change its ownership to another address.
+     * @dev Assign owner of this contract at construction.
+     */
     address controller = msg.sender;
     
-    /* 
-    Mapped state variable for (value = balance, key = address)
-    only visiable for contract internal.
-    */
+    /** 
+     * @dev Mapped state variable for (value = balance, key = address)
+     * only available for contract internal payment function for reservations.
+     */
     mapping (address => uint) private balances;
     
-    /*
-    Mapped public state variable for (value = Place, key = name)
-    with auto-generated accessor function.
-    */
+    /** 
+     * @notice Mapped public state variable for (value = Place, key = name).
+     * All places data is free available directly and everytime up to date.
+     * @dev Available via automatically generated accessor function.
+     */
     mapping (bytes32 => Place) places;
     
-    // Validate if executed by controller. 
+    /**
+     * @notice Only controller can do this otherwise revert transaction.
+     * @dev Controller initial the contract creation `msg.sender`,
+     * have no balance and can change by himself to another address.
+     * Validate with `msg.sender == controller` otherwise `throw`.
+     */
     modifier only_controller() { 
         if (msg.sender != controller) { 
             throw; 
@@ -45,7 +62,12 @@
         }
     } 
     
-    // Validate if executed by owner of place `name`. 
+    /**
+     * @notice Only place owner can do this otherwise revert transaction.
+     * @dev Place owner is set by adding a place through controller. 
+     * Place owner have balance from reservations and can update his place.
+     * Validate with `msg.sender == places[name].owner` otherwise `throw`.
+     */
     modifier only_placeowner(bytes32 name) { 
         if (msg.sender != places[name].owner) { 
             throw; 
@@ -53,15 +75,23 @@
         }
     } 
     
-    // Validate if `reservedBlock` is at least 50 blocks in future. 
+    /**
+     * @notice Only executes if reservedBlock is at least 50 blocks in future.
+     * That means by 15sec Blocktime a minimum parking time of 12,5 min.
+     * Otherwise the transaction will be reverted.
+     * @dev Validate with `reservedBlock > block.number + 50` otherwise `throw`.
+     */
     modifier only_future(uint reservedBlock) { 
-        if (reservedBlock > block.number + 50) { 
+        if (reservedBlock <= block.number + 50) { 
             throw; 
             _ 
         }
     } 
     
-    // Validate if place `name` is enabled. 
+    /**
+     * @notice Only executes if place is enabled otherwise reverts transaction.
+     * @dev Validate with `places[name].enabled == true` otherwise `throw`.
+     */
     modifier only_enabled(bytes32 name) { 
         if (places[name].enabled != true) { 
             throw; 
@@ -69,27 +99,52 @@
         }
     }
     
-    // Validate if place `name` is valid and does not exists. 
-    modifier only_existing(bytes32 name) { 
+    /**
+     * @notice Only executes if place name not empty and not exists 
+     * otherwise reverts transaction. Place names have to be unique.
+     * @dev Validate with `places[name].name == 0 || name == ""` otherwise 
+     * `throw`. 
+     */
+    modifier only_not_existing(bytes32 name) { 
         if (places[name].name != 0 && name != "") { 
             throw; 
             _ 
         }
     } 
     
-    // Event for updated place `name` notifying clients and connected dapps.
+        /**
+     * @notice Only executes if place name not exists otherwise reverts 
+     * transaction. Place names have to be unique.
+     * @dev Validate with `places[name].name != 0` otherwise `throw`.
+     * 
+     */
+    modifier only_existing(bytes32 name) { 
+        if (places[name].name == 0) { 
+            throw; 
+            _ 
+        }
+    } 
+    
+    /**
+     * @notice Event for updated place notifying clients and connected 
+     * dapps that they can update their MVC.
+     * @dev Can be watched with `ParkingPlaces.PlaceUpdated().watch(...);`.
+     */
     event PlaceUpdated(bytes32 name);
     
-    /* 
-    Event for reservation on place `name` for `address` 
-    until `reservedBlock` notifying clients and connected dapps.
-    */
+    /**
+     * @notice Event for reservation on place `name` for `address` 
+     * until reserved block notifying clients and connected dapps.
+     * @dev Can be watched with `ParkingPlaces.SlotReservation().watch(...);`.
+     */
     event SlotReservation(bytes32 name, address parker, uint reservedBlock);
     
-    /* 
-    Gets next free slot `sid` on place `name` or throw if no slots free
-    only visible for contract internal.
-    */
+    /** 
+     * @dev Gets next free slot `sid` on place `name` or `throw` if no slots 
+     * are free. This is only visible for contract internal.
+     * @param name The name of the place.
+     * @return The id as position in array.
+     */
     function GetNextFreeSlot(bytes32 name) private only_existing(name) 
         returns (uint sid) 
     { 
@@ -101,15 +156,31 @@
         throw;
     } 
     
-    /// Create contract without parking places.
+    /** 
+     * @notice Creates a contract without parking places.
+     * @dev The `msg.sender` becomes the controller and owner of this contract, 
+     * can change its ownership, add places or close the contract.
+     */
     function ParkingPlaces() {}
     
-    /// Change contract controller to `newController`.
+    /** 
+     * @notice Change contract controller to `newController`.
+     * Balances still holding by the place owners.
+     * @dev If contract controller changed to contract address itself no places
+     * can be added and the contract can never be closed.
+     * @param newController The address of the new owner.
+     */
     function ChangeController(address newController) only_controller {
         controller = newController;
     }
     
-    /// Create a parking reservation for place `name` until `reservedBlock`.
+    /** 
+     * @notice Create a parking reservation for place until reserved block.
+     * An Event will be triggered to notify the watching client and dapps.
+     * @dev The payment is made internally and the place owner is the receiver.
+     * @param name The name of the place.
+     * @param reservedBlock The Block number until to reserve.
+     */
     function ReserveSlot(bytes32 name, uint reservedBlock) 
         only_future(reservedBlock)
         only_enabled(name) 
@@ -123,7 +194,12 @@
         SlotReservation(name, msg.sender, reservedBlock);
     }
     
-    // Pay for reservation at place `name` only visible for contract internal.
+    /** 
+     * @dev Pay for reservation at place `name` only visible for contract 
+     * internal. `throw` if send has not enough or an overflow occurs. 
+     * @param name The name of the place.
+     * @param value The value to pay.
+     */
     function PayReservation(bytes32 name, uint value) private {
         // Check if the sender has enough. 
         if (balances[msg.sender] < value) {
@@ -141,8 +217,17 @@
         balances[places[name].owner] += value;
     }
     
-    /// Update coordinates `newLocation` for parking place `name`.
-    function UpdatePlaceLocation(bytes32 name, int16[2][2] newLocation) 
+    /** 
+     * @notice Update coordinates for parking place.
+     * An Event will be triggered to notify the watching client and dapps.
+     * @dev The coordinates will not be checked for validity.
+     * @param name The name of the place.
+     * @param newLocation The array with new coordinates of the place.
+     * The format for Berlin for example is 
+     * latitude: newLocation[0][0] = 52, newLocation[0][1] = 524370
+     * longitude: newLoaction[1][0] = 13, newLocation[1][1] = 410530
+     */
+    function UpdatePlaceLocation(bytes32 name, int24[2][2] newLocation) 
         only_placeowner(name) 
         only_existing(name) 
     {
@@ -151,10 +236,20 @@
         PlaceUpdated(name);
     }
     
-    /// Add a parking place `name` at coordinates `location` for `owner`.
+    /**
+     * @notice Add a diabled parking place without slots and trigger an event 
+     * to notify the watching client and dapps.
+     * @dev Place owner holds the balances and can later not be changed.
+     * @param name The name of the place.
+     * @param location The array with new coordinates of the place.
+     * The format for Berlin for example is 
+     * latitude: newLocation[0][0] = 52, newLocation[0][1] = 524370
+     * longitude: newLoaction[1][0] = 13, newLocation[1][1] = 410530
+     * @param owner The address for owner of the place.
+     */
     function AddPlace(bytes32 name, int16[2][2] location, address owner) 
         only_controller 
-        only_existing(name) 
+        only_not_existing(name) 
     {
         places[name].name = name;
         places[name].enabled = false;
@@ -164,17 +259,30 @@
         PlaceUpdated(name);
     }
     
-    /// Add `amount` slots to parking place `name`.
+    /** 
+     * @notice Adds amount of slots to parking place with owner as parker and
+     * this block number as default.
+     * An Event will be triggered to notify the watching client and dapps.
+     * @dev push in for-loop a new slot to slots array of place.
+     * @param name The name of the place.
+     * @param name The amount of slots adding to the place.
+     */
     function AddSlots(bytes32 name, uint amount) 
         only_placeowner(name) 
         only_existing(name) 
     {
         for (uint i = 0; i < amount; i++) {
-            places[name].slots.push(Slot(block.number, msg.sender));
+            places[name].slots.push(Slot(msg.sender, block.number));
         }
+        // Triggering event that client and dapps can updating their MVC.
+        PlaceUpdated(name);
     }
     
-    /// Disable (open) parking place `name`.
+    /**
+     * @notice Disable parking place for new reservations.
+     * An Event will be triggered to notify the watching client and dapps.
+     * @param name The name of the place.
+     */
     function DisablePlace(bytes32 name) 
         only_placeowner(name) 
         only_existing(name) 
@@ -184,7 +292,11 @@
         PlaceUpdated(name);
     }
     
-    /// Enable (close) parking place `name`.
+    /** 
+     * @notice Enable parking place for reservations.
+     * An Event will be triggered to notify the watching client and dapps.
+     * @param name The name of the place.
+     */
     function EnablePlace(bytes32 name) 
         only_placeowner(name) 
         only_existing(name) 
@@ -194,12 +306,18 @@
         PlaceUpdated(name);
     }
     
-    // Fallback for invalid date or ether without data and reverts the tx.
+    /**
+     * @notice This is an invalid call so the transaction will be reverted. 
+     * @dev Fallback for invalid date or ether without data.
+     */
     function () { 
         throw; 
     }
 
-    /// Close this contract and sends remaining funds back to creator.
+    /**
+     * @notice Close this contract but place owner still holding their funds.
+     * @dev Removes contracts bytecode and storage from current block to future.
+     */
     function close() only_controller {
         selfdestruct(controller);  
     }
