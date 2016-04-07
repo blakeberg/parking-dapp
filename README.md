@@ -26,15 +26,6 @@ The paths depending on docker container containing the files too. *(link below)*
 - `solc --userdoc /home/geth/contracts/ParkingPlaces.sol > pp-userdoc.json`
 - `solc --devdoc /home/geth/contracts/ParkingPlaces.sol > pp-devdoc.json`
 
-### Web3 deploy
-The paths depending on docker container containing the files too. *(link below)*
-
-1. connect to JavaScript console of running Ethereum client: `geth attach`
-2. create contract account from javascript `loadScript('/home/geth/contracts/ParkingPlaces.js');`
-3. you have to unlook your account with your passphrase
-4. you will get a transaction with the contract creation *(this take a while)*
-5. if transaction is mined you get the contract address
-
 ### ABI
 Abstract binary interface `solc --abi /home/geth/contracts/ParkingPlaces.sol > pp-userdoc.json` (single line)
 
