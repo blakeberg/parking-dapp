@@ -68,7 +68,7 @@
                 return i;
             }
         }
-        return 0;
+        throw;
     }
     
     function close() {
