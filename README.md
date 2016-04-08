@@ -1,22 +1,37 @@
 # parking-dapp
 A Parking Dapp on Ethereum Blockchain.
 
-## contract 
+## Deploy contract 
 ParkingPlaces.sol were published under `/contracts` in this repository. Starting Ethereum client for solidity online compiler.
 
 `geth --testnet --rpc --rpcaddr "0.0.0.0" --rpccordomain "*"`
 
 If you connect Web3 Provider you can deploy the contract directly from solidity online compiler.
+Then you have to unlook your account before. 
+Or you deploy from JavaScript console of running Ethereum client.
 
-### Web3 deploy
+1. create contract account from javascript `loadScript('ParkingPlaces.js');`
+2. you have to unlook your account with your passphrase
+3. you will get a transaction with the contract creation
+4. if transaction is mined you get the contract address
 
-1. connect to JavaScript console of running Ethereum client: `geth attach`
-2. create contract account from javascript `loadScript('ParkingPlaces.js');`
-3. you have to unlook your account with your passphrase
-4. you will get a transaction with the contract creation
-5. if transaction is mined you get the contract address
+> 
 
-> You can also deploy from online compiler but have to unlook your account before.
+## Use contract
+
+You have deployt before and still connected to JavaScript console.
+
+1. Show methods type `parkingplaces`
+2. Add place type `parkingplaces.AddPlace(eth.accounts[0], "Berlin", "52.5243700", "13.4105300", {from:eth.accounts[0], gas: 300000});`
+3. Show place type `parkingplace.places()` and you get `["0x0212a53b6224ea371dd4201a8123a73edc4893de", "Berlin", true, "52.5243700", "13.4105300"]`
+4. Add second place for another address (instead of `eth.account[0]`)
+5. Show places by index type `parkingplace.places(1)`
+6. Add slots for place type `parkingplaces.AddSlots(eth.accounts[0], 3, {from:eth.accounts[0], gas: 300000});`
+7. Show slot info type `parkingplaces.GetSlotInfo(eth.accounts[0])` and you will get an array with first (free slots, slots, min slot time).
+8. Reserve slot type `parkingplaces.ReserveSlots(eth.accounts[0], eth.blockNumber+50, {from:eth.accounts[0], gas: 300000});`
+9. If you show slot info again you see one free slot less.
+
+## Generate documentation
 
 ### Natspec 
 
