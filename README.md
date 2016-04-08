@@ -10,7 +10,7 @@ This contract was developed with online compiler and connected to docker contain
 
 > (Web3 Provider `http://geth:8545`)
 
-The paths depending on docker container containing the files too. *(link below)*
+The following paths depending on docker container. *(link below)*
 
 ### Web3 deploy
 
@@ -20,7 +20,7 @@ The paths depending on docker container containing the files too. *(link below)*
 4. you will get a transaction with the contract creation
 5. if transaction is mined you get the contract address
 
-> You can also deploy from online compiler and have to unlook account before.
+> You can also deploy from online compiler but have to unlook your account before.
 
 ### Natspec 
 
