@@ -16,6 +16,8 @@
         address parker;
         uint reservedBlock;
     }
+    
+    event Reservation(address place, address parker, uint reservedBlock);
 
     function ParkingPlaces() {
         controller = msg.sender;
@@ -37,13 +39,14 @@
         }
     }
     
-    function ReserveSlots(address owner, uint time) public {
+    function ReserveSlot(address owner, uint time) public {
         if (time < block.number) {
             throw;
         }
         uint id = GetNextFreeSlot(owner);
         place[owner].slots[id].parker = msg.sender;
         place[owner].slots[id].reservedBlock = time;
+        Reservation(owner, msg.sender, time);
     }
 
     function GetSlotInfo(address owner) constant public returns(uint[3] slot) {
