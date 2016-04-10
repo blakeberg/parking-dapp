@@ -46,7 +46,6 @@ With solidity online compiler you can connect to Web3 Provider and deploy contra
 If you want to load an existing contract you need the ABI specification *(see link below or get it from solidity online compiler)* and the contract address:
 
 	var abiDefinition = <paste abi JSON here>
-	var parkingplaces = web3.eth.contract(abiDefinition);
 
 If you have deployt before and still connected to JavaScript console you have the `var parkingplaces` defined.
 
