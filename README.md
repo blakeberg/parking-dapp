@@ -43,7 +43,12 @@ With solidity online compiler you can connect to Web3 Provider and deploy contra
 
 ## Use contract
 
-You have deployt before and still connected to JavaScript console.
+If you want to load an existing contract you need the ABI specification *(see link below or get it from solidity online compiler)* and the contract address:
+
+	var abiDefinition = <paste abi JSON here>
+	var parkingplaces = web3.eth.contract(abiDefinition);
+
+If you have deployt before and still connected to JavaScript console you have the `var parkingplaces` defined.
 
 1. Show methods type `parkingplaces`
 2. Add place type `parkingplaces.AddPlace(eth.accounts[0], "Berlin", "52.5243700", "13.4105300", {from:eth.accounts[0], gas: 300000});`
