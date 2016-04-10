@@ -51,22 +51,36 @@ You have deployt before and still connected to JavaScript console.
 4. Add second place for another address (instead of `eth.account[0]`)
 5. Show places by index type `parkingplace.places(1)`
 6. Add slots for place type `parkingplaces.AddSlots(eth.accounts[0], 3, {from:eth.accounts[0], gas: 300000});`
-7. Show slot info type `parkingplaces.GetSlotInfo(eth.accounts[0])` and you will get an array with first (free slots, slots, min slot time).
-8. Add an Event for Reservation notification:
+7. Add an Event for Reservation notification:
 
-	    var event = parkingplaces.Reservation({}, '', function(error, result){
+	    var eventReservation = parkingplaces.Reservation({}, '', function(error, result){
 	    if (!error)
 	    	console.log("Reservation for place at " 
 	    	+ result.args.place + " reserved from parker at " 
-	    	+ + result.args.parker + " until block number " + result.args.reservedBlock)
+	    	+ result.args.parker + " until block number " + result.args.reservedBlock)
 	    });
-9. To reserve a slot for 50 blocks type `parkingplaces.ReserveSlot(eth.accounts[0], eth.blockNumber+50, {from:eth.accounts[0], gas: 300000});`
-10. Get an notification from event like 
+8. Add an Event for Transaction notification:
 
-    	Reservation for place at 0x0212a53b6224ea371dd4201a8123a73edc4893de reserved from parker at
-		 0x0212a53b6224ea371dd4201a8123a73edc4893de until block number 724682
+	    var eventTransaction = parkingplaces.Transaction({}, '', function(error, result){
+	    if (!error)
+	    	console.log("Payment from " 
+	    	+ result.args.from + " to " 
+	    	+ result.args.to + " with " + result.args.amount + " wei")
+	    });
 
-11. If you show slot info again you see one free slot less.
+9. To reserve a slot for 15 blocks type `parkingplaces.ReserveSlot(eth.accounts[0], eth.blockNumber+15, {from:eth.accounts[0], gas: 300000, web3.toWei(500, "finney")});`
+10. Get notifications from event like 
+
+    	[1]
+		Reservation for place at 0x3bee2a555de376981f9feb88b506062043c6a287 reserved from parker at 0x0212a53b6224ea371dd4201a8123a73edc4893de until block number 730416
+		[2]
+		Payment from 0x0212a53b6224ea371dd4201a8123a73edc4893de to 0x3bee2a555de376981f9feb88b506062043c6a287 with 130000000000000000 wei
+		[3]
+		Payment from 0x3bee2a555de376981f9feb88b506062043c6a287 to 0x0212a53b6224ea371dd4201a8123a73edc4893de with 370000000000000000 wei
+
+	> [1] is your Reservation to block calculated from mining block (730403) so effective you reserved 13 blocks cause your eth.blockNumber was two blocks before.
+	> [2] is your payment of 130 finney.
+	> [3] is your payback of 370 finney.
 
 ## Generate documentation
 

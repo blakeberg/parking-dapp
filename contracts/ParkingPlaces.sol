@@ -1,7 +1,9 @@
 ﻿contract ParkingPlaces { 
+    
     address controller;
     Place[] public places;
-    mapping (address => Place) place;
+    mapping (address => Place) placeOf;
+    mapping (address => uint) balanceOf;
 
     struct Place {
         address owner;
@@ -18,6 +20,7 @@
     }
     
     event Reservation(address place, address parker, uint reservedBlock);
+    event Transaction(address from, address to, uint amount);
 
     function ParkingPlaces() {
         controller = msg.sender;
@@ -35,43 +38,36 @@
     
     function AddSlots(address owner, uint amount) public {
         for (uint i = 0; i < amount; i++) {
-            place[owner].slots.push(Slot(msg.sender, block.number));
+            placeOf[owner].slots.push(Slot(msg.sender, block.number));
         }
     }
     
-    function ReserveSlot(address owner, uint time) public {
-        if (time < block.number) {
-            throw;
-        }
-        uint id = GetNextFreeSlot(owner);
-        place[owner].slots[id].parker = msg.sender;
-        place[owner].slots[id].reservedBlock = time;
-        Reservation(owner, msg.sender, time);
-    }
-
-    function GetSlotInfo(address owner) constant public returns(uint[3] slot) {
-        uint[3] memory slotInfo;
-        slotInfo[0] = 0;
-        slotInfo[1] = place[owner].slots.length;
-        slotInfo[2] = 0;
-        for (uint i = 0; i < place[owner].slots.length; i++) {
-            if (place[owner].slots[i].reservedBlock <= block.number) {
-                slotInfo[0] += 1;
-            }
-            if (place[owner].slots[i].reservedBlock < slotInfo[2]) {
-                slotInfo[2] = place[owner].slots[i].reservedBlock;
-            }
-        }
-        return slotInfo;
+    function ReserveSlot(address place, uint time) public {
+        uint id = GetNextFreeSlot(place);
+        PayReservation(place, time);
+        placeOf[place].slots[id].parker = msg.sender;
+        placeOf[place].slots[id].reservedBlock = time;
+        Reservation(place, msg.sender, time);
     }
     
-    function GetNextFreeSlot(address owner) internal returns(uint id) {
-        for (uint i = 0; i < place[owner].slots.length; i++) {
-            if (place[owner].slots[i].reservedBlock <= block.number) {
+    function PayReservation(address place, uint time) internal {
+        uint amount = (time - block.number) * 10 finney;
+        OneTransaction(msg.sender, place, amount);
+        OneTransaction(place, msg.sender, msg.value - amount);
+    }
+    
+    function OneTransaction(address from, address to, uint amount) internal {
+        from.send(uint256(-1) * amount);
+        to.send(amount);
+        Transaction(from, to, amount);
+    }
+    
+    function GetNextFreeSlot(address place) internal returns(uint id) {
+        for (uint i = 0; i < placeOf[place].slots.length; i++) {
+            if (placeOf[place].slots[i].reservedBlock <= block.number) {
                 return i;
             }
         }
-        throw;
     }
     
     function close() {
