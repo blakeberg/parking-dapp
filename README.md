@@ -41,11 +41,14 @@ With solidity online compiler you can connect to Web3 Provider and deploy contra
 3. you will get a transaction with the contract creation
 4. if transaction is mined you get the contract address
 
+> If you got an "Error in contract creation: Error: Contract transaction couldn't be found after 50 blocks" look for contract creation in blockchain explorer for you account and load it from contract address in next step.
+
 ## Use contract
 
 If you want to load an existing contract you need the ABI specification *(see link below or get it from solidity online compiler)* and the contract address:
 
 	var abiDefinition = <paste abi JSON here>
+	var parkingplaces = web3.eth.contract(abiDefinition).at(<paste contract address>);
 
 If you have deployt before and still connected to JavaScript console you have the `var parkingplaces` defined.
 
@@ -106,5 +109,6 @@ Assembler source languge with Ethereum virtual machine opcodes
 
 ## Useful links
 - Solidity online compiler <http://chriseth.github.io/browser-solidity>
+- Ethereum blockchain explorer for testnet <http://testnet.etherscan.io>
 - Line Break Removal Tool <http://www.textfixer.com/tools/remove-line-breaks.php>
 - JSON formatter and validator <https://jsonformatter.curiousconcept.com>
