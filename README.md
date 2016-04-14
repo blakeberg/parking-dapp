@@ -52,13 +52,60 @@ If you want to load an existing contract you need the ABI specification *(see li
 
 If you have deployt before and still connected to JavaScript console you have the `var parkingplaces` defined.
 
-1. Show methods type `parkingplaces`
-2. Add place type `parkingplaces.AddPlace(eth.accounts[0], "Berlin", "52.5243700", "13.4105300", {from:eth.accounts[0], gas: 300000});`
-3. Show place type `parkingplace.places()` and you get `["0x0212a53b6224ea371dd4201a8123a73edc4893de", "Berlin", true, "52.5243700", "13.4105300"]`
-4. Add second place for another address (instead of `eth.account[0]`)
-5. Show places by index type `parkingplace.places(1)`
-6. Add slots for place type `parkingplaces.AddSlots(eth.accounts[0], 3, {from:eth.accounts[0], gas: 300000});`
-7. Add an Event for Reservation notification:
+Show public methods, events and state variables type `parkingplaces`
+
+**Message calls:**
+
+* places `parkingplaces.places(<0..n>)` returns  array (owner, name, latitude, longitude)
+* GetSlotCount `parkingplaces.GetSlotCount(<address>) ` returns number
+* GetNextFreeSlot `parkingplaces.GetSlotCount(<address>, <blocknumber>) ` returns number
+* GetFreeSlotCount `parkingplaces.GetFreeSlotCount(<address>, <blocknumber>) ` returns number
+* ExistsPlace `parkingplaces.ExistsPlace(<address>) ` return boolean
+* GetReservedBlock `parkingplaces.GetReservedBlock(<address>, <address>) ` *(place, parker)* returns number
+
+> Get-methods returns 0 if place at address not exists so you should can check this before with method `ExistsPlace`.
+
+To show how many places exists in contract storage type `eth.getStorageAt(<contract address>,1)`
+
+**Transaction calls:**
+
+* close 
+* AddPlace
+* AddSlots
+* ReserveSlot 
+
+> Transaction methods have no returns values but trigger events. You should also prove is an place for address exists.
+
+You need an account to pay gas and/or transfer value `parkingplaces.<Methodname>([optional data], eth.accounts[0], 3, {from:eth.accounts[0], gas: 300000}, [optional value]);`
+
+**Events:**
+
+* PlaceAdded returns array (place, name, latitude, longitude)
+* SlotsAdded returns array (place, amount, latitude, longitude)
+* Reservation returns array (place, parker, reservedBlock)
+* Payment returns array (from, to, amount)
+
+### Register events
+
+1. Add an Event for added place notification:
+
+	    var eventPlaceAdded = parkingplaces.PlaceAdded({}, '', function(error, result){
+	    if (!error)
+	    	console.log("Place '" 
+	    	+ result.args.name + "' added from " 
+	    	+ result.args.place + " at latitude " + result.args.latitude
+	    	+ "and longitude " + result.args.longitude)
+	    });
+
+2. Add an Event for added slots notification:
+
+	    var eventSlotsAdded = parkingplaces.SlotsAdded({}, '', function(error, result){
+	    if (!error)
+	    	console.log(result.args.amount + " Slots added for place from " 
+	    	+ result.args.place)
+	    });
+
+3. Add an Event for Reservation notification:
 
 	    var eventReservation = parkingplaces.Reservation({}, '', function(error, result){
 	    if (!error)
@@ -66,7 +113,7 @@ If you have deployt before and still connected to JavaScript console you have th
 	    	+ result.args.place + " reserved from parker at " 
 	    	+ result.args.parker + " until block number " + result.args.reservedBlock)
 	    });
-8. Add an Event for Transaction notification:
+4. Add an Event for Transaction notification:
 
 	    var eventTransaction = parkingplaces.Transaction({}, '', function(error, result){
 	    if (!error)
@@ -75,8 +122,32 @@ If you have deployt before and still connected to JavaScript console you have th
 	    	+ result.args.to + " with " + result.args.amount + " wei")
 	    });
 
-9. To reserve a slot for 15 blocks type `parkingplaces.ReserveSlot(eth.accounts[0], eth.blockNumber+15, {from:eth.accounts[0], gas: 300000, web3.toWei(500, "finney")});`
-10. Get notifications from event like 
+> You can see triggert events also in Event Logs of a transaction in blockchain explorer.
+
+### Adding places
+A place is unique by its address (owner).
+
+1. Add place type `parkingplaces.AddPlace(eth.accounts[0], "Berlin", "52.5243700", "13.4105300", {from:eth.accounts[0], gas: 300000});`
+2. Show place type `parkingplaces.places()` and you get `["0x0212a53b6224ea371dd4201a8123a73edc4893de", "Berlin", true, "52.5243700", "13.4105300"]` without slot informations
+3. Add second place for another address (instead of `eth.account[0]`)
+4. Show places by index type `parkingplaces.places(1)`
+5. Show count of places type `eth.getStorageAt(<contract address>,1)`
+6. Validate if place exists type `parkingplaces.ExistsPlace(eth.accounts[0])`
+7. Add slots for place type `parkingplaces.AddSlots(eth.accounts[0], 3, {from:eth.accounts[0], gas: 300000});`
+8. Show slot count for place type `parkingplaces.GetSlotCount(eth.accounts[0])`
+9. Show free slot count for place and current block type `parkingplaces.GetFreeSlotCount(eth.accounts[0], eth.blockNumber)` 
+10. Show free slot count for place and current block type `parkingplaces.GetFreeSlotCount(eth.accounts[0], eth.blockNumber - 50)` gets 0 cause you added the slots with blocknumber of transaction.
+
+> You will get notifications for added places and slots if you have it registered before.
+
+### Reserving places
+A reservation can be applied on slots and save the address of parker and a blocknumber until the reservation is valid.
+
+1. To reserve a slot for 15 blocks type `parkingplaces.ReserveSlot(eth.accounts[0], eth.blockNumber+15, {from:eth.accounts[0], gas: 300000, value: web3.toWei(500, "finney")});`
+
+	> If there are no slots free you get your value back and also payment events for this payback. 
+
+2. Get notifications from events like 
 
     	[1]
 		Reservation for place at 0x3bee2a555de376981f9feb88b506062043c6a287 reserved from parker at 0x0212a53b6224ea371dd4201a8123a73edc4893de until block number 730416
@@ -88,6 +159,13 @@ If you have deployt before and still connected to JavaScript console you have th
 	> [1] is your Reservation to block calculated from mining block (730403) so effective you reserved 13 blocks cause your eth.blockNumber was two blocks before.
 	> [2] is your payment of 130 finney.
 	> [3] is your payback of 370 finney.
+
+3. Show free slot count for place and current block type `parkingplaces.GetFreeSlotCount(eth.accounts[0], eth.blockNumber)` 
+4. Show free slot count for place 15 blocks in futura type `parkingplaces.GetFreeSlotCount(eth.accounts[0], eth.blockNumber - 15)` gets all slots cause the added reservation is not valid at futura block.
+5. Validate parkers reservation type `parkingplaces.GetReservedBlock(eth.accounts[0], eth.accounts[0]) - eth.blockNumber;` 
+	* if the value is equals or greater than 0 the reservation is valid
+	* if the value is equals eth.blockNumber but negativ the place or parker not exists
+	* otherwise the reservation is in past
 
 ## Generate documentation
 
