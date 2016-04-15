@@ -56,12 +56,12 @@ Show public methods, events and state variables type `parkingplaces`
 
 **Message calls:**
 
-* places `parkingplaces.places(<0..n>)` returns  array (owner, name, latitude, longitude)
-* GetSlotCount `parkingplaces.GetSlotCount(<address>) ` returns number
-* GetNextFreeSlot `parkingplaces.GetSlotCount(<address>, <blocknumber>) ` returns number
-* GetFreeSlotCount `parkingplaces.GetFreeSlotCount(<address>, <blocknumber>) ` returns number
-* ExistsPlace `parkingplaces.ExistsPlace(<address>) ` return boolean
-* GetReservedBlock `parkingplaces.GetReservedBlock(<address>, <address>) ` *(place, parker)* returns number
+* places
+* GetSlotCount
+* GetNextFreeSlot
+* GetFreeSlotCount
+* ExistsPlace
+* GetReservedBlock
 
 > Get-methods returns 0 if place at address not exists so you should can check this before with method `ExistsPlace`.
 
@@ -69,10 +69,10 @@ To show how many places exists in contract storage type `eth.getStorageAt(<contr
 
 **Transaction calls:**
 
-* close 
-* AddPlace
-* AddSlots
-* ReserveSlot 
+* close *(only controller)*
+* AddPlace *(only controller)*
+* AddSlots *(only place owner)*
+* ReserveSlot *(only when free slots available else payback send value)*
 
 > Transaction methods have no returns values but trigger events. You should also prove is an place for address exists.
 
@@ -80,10 +80,10 @@ You need an account to pay gas and/or transfer value `parkingplaces.<Methodname>
 
 **Events:**
 
-* PlaceAdded returns array (place, name, latitude, longitude)
-* SlotsAdded returns array (place, amount, latitude, longitude)
-* Reservation returns array (place, parker, reservedBlock)
-* Payment returns array (from, to, amount)
+* PlaceAdded
+* SlotsAdded
+* Reservation
+* Transaction
 
 ### Register events
 
@@ -92,37 +92,34 @@ You need an account to pay gas and/or transfer value `parkingplaces.<Methodname>
 	    var eventPlaceAdded = parkingplaces.PlaceAdded({}, '', function(error, result){
 	    if (!error)
 	    	console.log("Place '" 
-	    	+ result.args.name + "' added from " 
-	    	+ result.args.place + " at latitude " + result.args.latitude
-	    	+ "and longitude " + result.args.longitude)
+	    	+ result.args.name + "' added from " + result.args.place + " at latitude " 
+	    	+ result.args.latitude + " and longitude " + result.args.longitude)
 	    });
 
 2. Add an Event for added slots notification:
 
 	    var eventSlotsAdded = parkingplaces.SlotsAdded({}, '', function(error, result){
 	    if (!error)
-	    	console.log(result.args.amount + " Slots added for place from " 
-	    	+ result.args.place)
+	    	console.log(result.args.amount + " Slots added for place from " + result.args.place)
 	    });
 
 3. Add an Event for Reservation notification:
 
 	    var eventReservation = parkingplaces.Reservation({}, '', function(error, result){
 	    if (!error)
-	    	console.log("Reservation for place at " 
-	    	+ result.args.place + " reserved from parker at " 
+	    	console.log("Reservation for place at " + result.args.place + " reserved from parker at " 
 	    	+ result.args.parker + " until block number " + result.args.reservedBlock)
 	    });
+
 4. Add an Event for Transaction notification:
 
 	    var eventTransaction = parkingplaces.Transaction({}, '', function(error, result){
 	    if (!error)
-	    	console.log("Payment from " 
-	    	+ result.args.from + " to " 
+	    	console.log("Payment from " + result.args.from + " to " 
 	    	+ result.args.to + " with " + result.args.amount + " wei")
 	    });
 
-> You can see triggert events also in Event Logs of a transaction in blockchain explorer.
+> You can see triggered events also in Event Logs of a transaction in blockchain explorer.
 
 ### Adding places
 A place is unique by its address (owner).
