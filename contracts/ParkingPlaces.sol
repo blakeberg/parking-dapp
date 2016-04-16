@@ -1,9 +1,9 @@
 ﻿contract ParkingPlaces { 
     
     address public controller;
+    uint public blockCosts;
     Place[] public places;
     mapping (address => Place) placeOf;
-    mapping (address => uint) balanceOf;
 
     struct Place {
         address owner;
@@ -18,16 +18,47 @@
         uint reservedBlock;
     }
     
+    modifier isController() {
+        if (controller != msg.sender) {
+            throw;
+        }
+        else {
+            _
+        }
+    }
+    
+    modifier isOwner(address owner) {
+        if (owner != msg.sender) {
+            throw;
+        }
+        else {
+            _
+        }
+    }
+    
+    modifier hasValue() {
+        if (msg.value > 0) {
+            throw;
+        }
+        else {
+            _
+        }
+    }
+    
     event PlaceAdded(address place, string name, string latitude, string longitude);
     event SlotsAdded(address place, uint amount);
     event Reservation(address place, address parker, uint reservedBlock);
-    event Transaction(address from, address to, uint amount);
-
-    function ParkingPlaces() {
+    event Transaction(address to, uint amount);
+    
+    function ParkingPlaces(uint _blockCosts) public {
         controller = msg.sender;
+        blockCosts = _blockCosts;
     }
     
-    function ExistsPlace(address owner) constant public returns(bool exists) {
+    function () hasValue public {
+    }
+    
+    function existsPlace(address owner) constant public returns(bool exists) {
         for (uint i = 0; i < places.length; i++) {
             if (places[i].owner == owner) {
                 return true;
@@ -36,8 +67,8 @@
         return false;
     }
     
-    function AddPlace(address owner, string name, string lat, string long) public {
-        if (!ExistsPlace(owner) && msg.sender == controller) {
+    function addPlace(address owner, string name, string lat, string long) isController hasValue public {
+        if (!existsPlace(owner)) {
             uint id = places.length++;
             places[id].owner = owner;
             places[id].name = name;
@@ -48,8 +79,8 @@
         }
     }
     
-    function AddSlots(address owner, uint amount) public {
-        if (ExistsPlace(owner) && msg.sender == owner) {
+    function addSlots(address owner, uint amount) isOwner(owner) hasValue public {
+        if (existsPlace(owner)) {
             for (uint i = 0; i < amount; i++) {
                 placeOf[owner].slots.push(Slot(msg.sender, block.number));
             }
@@ -57,11 +88,11 @@
         }
     }
     
-    function GetSlotCount(address owner) constant public returns(uint count) {
+    function getSlotCount(address owner) constant public returns(uint count) {
         return placeOf[owner].slots.length;
     }
     
-    function GetFreeSlotCount(address owner, uint atBlock) constant public returns(uint count) {
+    function getFreeSlotCount(address owner, uint atBlock) constant public returns(uint count) {
         uint free = 0;
         for (uint i = 0; i < placeOf[owner].slots.length; i++) {
             if (placeOf[owner].slots[i].reservedBlock <= atBlock) {
@@ -71,7 +102,7 @@
         return free;
     }
     
-    function GetNextFreeSlot(address owner, uint atBlock) constant public returns(uint block) {
+    function getNextFreeSlot(address owner, uint atBlock) constant public returns(uint block) {
         uint free = 0;
         for (uint i = 0; i < placeOf[owner].slots.length; i++) {
             if (free == 0) {
@@ -86,7 +117,13 @@
         return free;
     }
     
-    function GetReservedBlock(address owner, address parker) constant public returns(uint block) {
+    function calculateEstimatedCosts (address owner, uint atBlock, uint toBlock) constant public returns(uint costs) {
+        if (toBlock > atBlock) {
+            return blockCosts * (toBlock - atBlock);
+        }
+    }
+    
+    function getReservedBlock(address owner, address parker) constant public returns(uint block) {
         for (uint i = 0; i < placeOf[owner].slots.length; i++) {
             if (placeOf[owner].slots[i].parker == parker) {
                 return placeOf[owner].slots[i].reservedBlock;
@@ -94,43 +131,38 @@
         }
     }
     
-    function ReserveSlot(address owner, uint time) public {
-        int id = GetNextFreeSlot(owner);
-        if (id > -1) {
-            PayReservation(owner, time);
-            placeOf[owner].slots[uint(id)].parker = msg.sender;
-            placeOf[owner].slots[uint(id)].reservedBlock = time;
-            Reservation(owner, msg.sender, time);
-        }
-        else {
-            PayReservation(owner, block.number);
-        }
+    function reserveSlot(address owner, uint time) public {
+        uint id = getNextFreeSlot(owner);
+        payReservation(owner, time);
+        placeOf[owner].slots[uint(id)].parker = msg.sender;
+        placeOf[owner].slots[uint(id)].reservedBlock = time;
+        Reservation(owner, msg.sender, time);
     }
     
-    function PayReservation(address owner, uint time) internal {
-        uint amount = (time - block.number) * 10 finney;
-        OneTransaction(msg.sender, owner, amount);
-        OneTransaction(owner, msg.sender, msg.value - amount);
+    function payReservation(address owner, uint time) internal {
+        uint amount = (time - block.number) * blockCosts;
+        if (msg.value < amount) {
+            throw;
+        }
+        oneTransaction(owner, amount);
+        oneTransaction(msg.sender, msg.value - amount);
     }
     
-    function OneTransaction(address from, address to, uint amount) internal {
-        from.send(uint256(-1) * amount);
+    function oneTransaction(address to, uint amount) internal {
         to.send(amount);
-        Transaction(from, to, amount);
+        Transaction(to, amount);
     }
     
-    function GetNextFreeSlot(address owner) internal returns(int id) {
+    function getNextFreeSlot(address owner) internal returns(uint id) {
         for (uint i = 0; i < placeOf[owner].slots.length; i++) {
             if (placeOf[owner].slots[i].reservedBlock <= block.number) {
-                return int(i);
+                return i;
             }
         }
-        return -1;
+        throw;
     }
     
-    function close() public {
-        if (msg.sender == controller) {
-            selfdestruct(controller);
-        }
+    function close() isController {
+        selfdestruct(controller);
     }
 }
