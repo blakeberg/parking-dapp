@@ -1,0 +1,18 @@
+parkingplaces.addPlace(eth.accounts[1], "Caecilienschule, Haarenufer", "53.1411913", "8.2013645", {from:eth.accounts[0], gas: 300000});
+parkingplaces.addPlace(eth.accounts[2], "Herbartgymnasium, Herbartstrasse", "53.1399532", "8.204146", {from:eth.accounts[0], gas: 300000});
+parkingplaces.addPlace(eth.accounts[3], "Theater", "53.1399596", "8.2041352,17", {from:eth.accounts[0], gas: 300000});
+parkingplaces.addPlace(eth.accounts[4], "Theaterwall", "53.1390273", "8.2087645", {from:eth.accounts[0], gas: 300000});
+parkingplaces.addPlace(eth.accounts[5], "Kasinoplatz", "53.1380163", "8.2115775", {from:eth.accounts[0], gas: 300000});
+parkingplaces.addPlace(eth.accounts[6], "Schlossplatz", "53.1381663", "8.2141416", {from:eth.accounts[0], gas: 300000});
+parkingplaces.addPlace(eth.accounts[7], "Damm", "53.135103", "8.2161354", {from:eth.accounts[0], gas: 300000});
+parkingplaces.addPlace(eth.accounts[8], "Am Festungsgraben", "53.1370649", "8.2182347", {from:eth.accounts[0], gas: 300000});
+parkingplaces.addPlace(eth.accounts[9], "Kanalstrasse, unter der Amalienbruecke", "53.1371647", "8.2211465", {from:eth.accounts[0], gas: 300000});
+parkingplaces.addPlace(eth.accounts[10], "Stautor", "53.1400292", "8.216791", {from:eth.accounts[0], gas: 300000});
+parkingplaces.addPlace(eth.accounts[11], "Kaiserstrasse", "53.1419842", "8.2195642", {from:eth.accounts[0], gas: 300000});
+parkingplaces.addPlace(eth.accounts[12], "Rosenstrasse", "53.1427719", "8.2162734", {from:eth.accounts[0], gas: 300000});
+parkingplaces.addPlace(eth.accounts[13], "Bahnhof Sued", "53.1427219", "8.2212818", {from:eth.accounts[0], gas: 300000});
+parkingplaces.addPlace(eth.accounts[14], "Bahnhof Nord, Willy-Brandt-Platz", "53.1450312", "8.2200143", {from:eth.accounts[0], gas: 300000});
+parkingplaces.addPlace(eth.accounts[15], "Am Pferdemarkt", "53.1463829", "8.2117653", {from:eth.accounts[0], gas: 300000});
+parkingplaces.addPlace(eth.accounts[16], "91er Strasse, unter Eisenbahnbruecke", "53.1456148", "8.2103998", {from:eth.accounts[0], gas: 300000});
+parkingplaces.addPlace(eth.accounts[17], "Bruederstrasse", "53.1455067", "8.2057818", {from:eth.accounts[0], gas: 300000});
+parkingplaces.addPlace(eth.accounts[18], "Katharinenstrasse, beim PFL", "53.1456662", "8.1883714", {from:eth.accounts[0], gas: 300000});

@@ -36,7 +36,7 @@ With solidity online compiler you can connect to Web3 Provider and deploy contra
 
 > The used JavaScript already includes the compile step!
 
-1. create contract account from JavaScript console `loadScript('ParkingPlaces.js');`
+1. create contract account from JavaScript console `loadScript('path/to/ParkingPlaces.js');`
 2. you have to unlook your account with your passphrase
 3. you will get a transaction with the contract creation
 4. if transaction is mined you get the contract address
@@ -129,7 +129,7 @@ A place is unique by its address (owner) in this example address `eth.accounts[0
 2. Show place type `parkingplaces.places()` and you get `["0x0212a53b6224ea371dd4201a8123a73edc4893de", "Berlin", true, "52.5243700", "13.4105300"]` without slot informations
 3. Add second place for another address (instead of `eth.account[0]`)
 4. Show places by index type `parkingplaces.places(1)`
-5. Show count of places type `eth.getStorageAt(<contract address>)`
+5. Show count of places type `eth.getStorageAt(<contract address>, 2)`
 6. Validate if place exists type `parkingplaces.existsPlace(eth.accounts[0])`
 7. Add slots for place type `parkingplaces.addSlots(eth.accounts[0], 3, {from:eth.accounts[0], gas: 300000});`
 8. Show slot count for place type `parkingplaces.getSlotCount(eth.accounts[0])`
@@ -167,6 +167,46 @@ A reservation can be applied on slots and save the address of parker and a block
 	* if the value is equals eth.blockNumber but negativ the place or parker not exists
 	* otherwise the reservation is in past
 
+## Initialize parking city
+This is the initialization of this contract for the city Oldenburg in Germany with 18 parking places as this example. For this if you should start from scratch with on account with at least 10 Ether in it.
+
+> You can show parking places and slots for Oldenburg at a map *(see link below)*
+
+1. If you have more than one account for testnet backup the accounts beyond the main account:
+	* Show accounts for testnet type `geth --testnet account list` *(if you only have on account go to 2.)*
+	* Go to keystore for testnet type `cd ~/.ethereum/testnet/keystore` and make backup folder `mkdir backup`
+	* Move key files for account older than the main account type `mv UTC--<time beyond>* /backup`
+	* Show accounts for testnet type `geth --testnet account list` *(now you should only have the main account)*
+2. Create Accounts for parking places
+	* Attach to JavaScript console type `geth attach` if Ethereum client is running
+	* Load JavaScript to create and unlock accounts and transfer 0.5 Ether to it from main account type `loadScript('path/to/CreateParkingPlacesAccounts.js');`
+		> If you have to unlook your account it is your main account and then only once.
+		> This take a while cause for each account a transaction is done.
+	* Show balance for all accounts:
+
+			var i = 0; 
+			eth.accounts.forEach( function(e){
+    			console.log("  eth.accounts["+i+"]: " +  e + " \tbalance: " + web3.fromWei(eth.getBalance(e), "ether") + " ether"); 
+    			i++; 
+			}) 
+
+3. Deploy Contract from main account *(see above)*
+4. Create Places in deployed contract from your accounts
+	* Load JavaScript to create real parking places from its place account type `loadScript('path/to/CreateParkingPlaces.js');`
+	* Show balance for all accounts *(see above)*
+5. Now you can verify all places
+	* `eth.getStorageAt(<contract address>, 2)` must be 18 as count for places
+	* `parkingplaces.places(0)` to `parkingplaces.places(17)` shows a place
+	* `parkingplaces.existsPlace(eth.accounts[1])` to `parkingplaces.existsPlace(eth.accounts[18])` is true
+6. Add Slots to existing places
+	* Load JavaScript to create slots for parking places from its place account type `loadScript('path/to/CreateParkingPlacesSlots.js');`
+	* Show balance for all accounts *(see above)*
+7. Now you can verify all slots
+	* `parkingplaces.getSlotCount(eth.accounts[1])`to `parkingplaces.getSlotCount(eth.accounts[18])` is between 18 and 401
+	* `parkingplaces.getFreeSlotCount(eth.accounts[1], eth.blockNumber)` to `parkingplaces.getFreeSlotCount(eth.accounts[18], eth.blockNumber)` is between 18 and 401
+	* `parkingplaces.getFreeSlotCount(eth.accounts[1], eth.blockNumber-100)` to `parkingplaces.getFreeSlotCount(eth.accounts[18], eth.blockNumber - 100)` is allways 0
+	* `parkingplaces.getNextFreeSlot(eth.accounts[1], eth.blockNumber)` to `parkingplaces.getNextFreeSlot(eth.accounts[1], eth.blockNumber)` is allways lower than `eth.blockNumber`
+
 ## Generate documentation
 
 ### Natspec 
@@ -187,6 +227,8 @@ Assembler source languge with Ethereum virtual machine opcodes
 
 ## Useful links
 - Solidity online compiler <http://chriseth.github.io/browser-solidity>
-- Ethereum blockchain explorer for testnet <http://testnet.etherscan.io>
+- Blockchain Explorer for Testnet <http://testnet.etherscan.io>
 - Line Break Removal Tool <http://www.textfixer.com/tools/remove-line-breaks.php>
 - JSON formatter and validator <https://jsonformatter.curiousconcept.com>
+- Ethereum Container <https://github.com/blakeberg/geth-node>
+- Map with Parking places in city Oldenburg(Germany) <http://gis4oldenburg.oldenburg.de/?es=C12S14>
