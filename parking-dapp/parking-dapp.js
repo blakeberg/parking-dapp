@@ -1,5 +1,12 @@
 if (Meteor.isClient) {
-  var MAP_ZOOM = 15;
+  const MAP_ZOOM = 15;
+  const CENTER = {lat: 53.143722, lng: 8.214059};
+  const TIMEOUT_ANIMATION = 200;
+  
+  if(typeof web3 === 'undefined') {
+    web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+  }
+  EthBlocks.init();
   /*
   1: add event on each marker for hover to show dummy info
   2. add blockchain info with block number and block time (allways updating)
@@ -39,12 +46,21 @@ if (Meteor.isClient) {
   Meteor.startup(function() {  
     GoogleMaps.load();
   });
+  
+  Template.blockchain.helpers({
+    currentBlockNumber: function() {
+      return EthBlocks.latest.number;
+    },
+    currentBlockTime: function() {
+      return EthBlocks.latest.timestamp - web3.eth.getBlock(web3.eth.blockNumber - 1).timestamp;
+    }  
+  });
 
   Template.map.helpers({  
     mapOptions: function() {
       if (GoogleMaps.loaded()) {
         return {
-          center: {lat: 53.143722, lng: 8.214059},
+          center: CENTER,
           zoom: MAP_ZOOM
         };
       }
@@ -55,7 +71,7 @@ if (Meteor.isClient) {
     GoogleMaps.ready('map', function(map) {
       
       for (var i = 0; i < places.length; i++) {
-        addMarkerWithTimeout(map, places[i], i * 200);
+        addMarkerWithTimeout(map, places[i], i * TIMEOUT_ANIMATION);
       }
     });
   });

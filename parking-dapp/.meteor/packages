@@ -19,3 +19,7 @@ ecmascript              # Enable ECMAScript2015+ syntax in app code
 autopublish             # Publish all data to the clients (for prototyping)
 insecure                # Allow all DB writes from clients (for prototyping)
 dburles:google-maps
+ethereum:web3
+ethereum:blocks
+less
+ethereum:dapp-styles

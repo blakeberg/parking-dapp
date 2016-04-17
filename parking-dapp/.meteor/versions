@@ -23,6 +23,9 @@ ecmascript@0.1.6
 ecmascript-runtime@0.2.6
 ejson@1.0.7
 es5-shim@4.1.14
+ethereum:blocks@0.3.1
+ethereum:dapp-styles@0.5.0
+ethereum:web3@0.15.3
 fastclick@1.0.7
 geojson-utils@1.0.4
 hot-code-push@1.0.0
@@ -33,6 +36,7 @@ id-map@1.0.4
 insecure@1.0.4
 jquery@1.11.4
 launch-screen@1.0.4
+less@2.5.1
 livedata@1.0.15
 logging@1.0.8
 meteor@1.1.10

@@ -3,8 +3,13 @@
 </head>
 
 <body>
+  {{> blockchain}}
   {{> map}}
 </body>
+
+<template name="blockchain">
+    Ethereum last block {{currentBlockNumber}} in {{currentBlockTime}} seconds.
+</template>
 
 <template name="map">  
   <div class="map-container">
