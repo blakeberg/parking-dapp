@@ -106,7 +106,10 @@ if (Meteor.isClient) {
   function addMarkerInfo(map, place, marker) {
     //add information of place and slot from contract parkingplaces
     var slotInfo = 
+      '<li><b>name: </b>' + place[1] + '</li>' +
       '<li><b>owner: </b>' + place[0] + '</li>' +
+      '<li><b>latitude: </b>' + place[2] + '</li>' +
+      '<li><b>longitude: </b>' + place[3] + '</li>' +
       '<li><b>slots total: </b>' + parkingplaces.getSlotCount(place[0]) + '</li>' +
       '<li><b>slots free: </b>' + parkingplaces.getFreeSlotCount(place[0], EthBlocks.latest.number) + '</li>' +
       '<li><b>next free slot: </b>' + parkingplaces.getNextFreeSlot(place[0], EthBlocks.latest.number) + '</li>'
