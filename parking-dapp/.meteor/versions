@@ -1,3 +1,6 @@
+3stack:bignumber@2.0.0
+alexvandesande:identicon@2.0.2
+amplify@1.0.0
 autopublish@1.0.4
 autoupdate@1.2.4
 babel-compiler@5.8.24_1
@@ -23,10 +26,17 @@ ecmascript@0.1.6
 ecmascript-runtime@0.2.6
 ejson@1.0.7
 es5-shim@4.1.14
+ethereum:accounts@0.3.10
 ethereum:blocks@0.3.1
 ethereum:dapp-styles@0.5.0
+ethereum:elements@0.7.0
+ethereum:tools@0.4.1
 ethereum:web3@0.15.3
 fastclick@1.0.7
+frozeman:animation-helper@0.2.6
+frozeman:persistent-minimongo@0.1.8
+frozeman:storage@0.1.9
+frozeman:template-var@1.2.3
 geojson-utils@1.0.4
 hot-code-push@1.0.0
 html-tools@1.0.5
@@ -38,6 +48,7 @@ jquery@1.11.4
 launch-screen@1.0.4
 less@2.5.1
 livedata@1.0.15
+localstorage@1.0.5
 logging@1.0.8
 meteor@1.1.10
 meteor-base@1.0.1

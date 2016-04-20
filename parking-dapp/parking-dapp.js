@@ -19,6 +19,7 @@ if (Meteor.isClient) {
   }
   //EthBlocks with last 50 block information auto updating
   EthBlocks.init();
+  EthAccounts.init();
   // load contract with abi at specified address
   var parkingplaces = web3.eth.contract(CONTRACT_ABI).at(CONTRACT_ADDRESS); 
   
@@ -28,17 +29,16 @@ if (Meteor.isClient) {
   });
   
   //template for block and time information
-  Template.blockchain.helpers({
+  Template.dapp.helpers({
     currentBlockNumber: function() {
       return EthBlocks.latest.number;
     },
+    accounts: function () {
+      return EthAccounts.find().fetch();
+    },
     currentBlockTime: function() {
       return formatTS(EthBlocks.latest.timestamp);
-    } 
-  });
-  
-  //template for map
-  Template.map.helpers({  
+    }, 
     mapOptions: function() {
       if (GoogleMaps.loaded()) {
         return {
@@ -49,7 +49,7 @@ if (Meteor.isClient) {
     }
   });
   
-  Template.map.onCreated(function() {  
+  Template.dapp.onCreated(function() {  
     //adding events from contract
     var eventPlaceAdded = parkingplaces.PlaceAdded({}, '', function(error, result){
       if (!error) {
