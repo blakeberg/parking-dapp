@@ -39,6 +39,15 @@ if (Meteor.isClient) {
     currentBlockTime: function() {
       return formatTS(EthBlocks.latest.timestamp);
     }, 
+    contractController: function () {
+      return parkingplaces.controller();
+    },
+    contractAddress: function () {
+      return CONTRACT_ADDRESS;
+    },
+    contractParkingCosts: function () {
+      return parkingplaces.blockCosts();
+    },
     mapOptions: function() {
       if (GoogleMaps.loaded()) {
         return {
