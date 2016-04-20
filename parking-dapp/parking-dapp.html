@@ -4,6 +4,7 @@
 
 <body>
   {{> dapp}}
+  {{> dapp_modalPlaceholder}}
 </body>
 
 <template name="dapp">  
@@ -30,6 +31,11 @@
       {{dapp_formatBalance "1000000000000000000" "0,0.00 UNIT" "eur"}}
       <br>
       You have to pay {{dapp_formatBalance contractParkingCosts "0,0.00[000] UNIT"}} per parking block.
+      <br><br>
+      Your payments:<br>
+      {{#each payments}}
+        <li>{{> payments}}</li>
+      {{/each}}
     </aside>
     <!-- content-->
     <main class="dapp-content">
@@ -37,3 +43,8 @@
     </main>
   </div>  
 </template> 
+
+<template name="modal_info">
+  <h1>{{header}}</h1>
+  <p>{{message}}</p>
+</template>

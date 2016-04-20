@@ -12,6 +12,7 @@ if (Meteor.isClient) {
   var markers = []; 
   var placeInfos = [];
   var places = [];
+  var payments = [];
   
   //initialize web3 and address of json rpc api from (needs running ethereum client allowing rpc)
   if(typeof web3 === 'undefined') {
@@ -48,6 +49,9 @@ if (Meteor.isClient) {
     contractParkingCosts: function () {
       return parkingplaces.blockCosts();
     },
+    contractPayments: function () {
+      return payments;
+    },
     mapOptions: function() {
       if (GoogleMaps.loaded()) {
         return {
@@ -62,29 +66,28 @@ if (Meteor.isClient) {
     //adding events from contract
     var eventPlaceAdded = parkingplaces.PlaceAdded({}, '', function(error, result){
       if (!error) {
-        console.log("Place '" + result.args.name + "' added from " + result.args.place + " at latitude " 
-          + result.args.latitude + " and longitude " + result.args.longitude);
         places[result.args.place] = [result.args.place, result.args.name, result.args.latitude, result.args.longitude];
         addMarkerWithTimeout(result.args.place, TIMEOUT_ANIMATION);
       }
     });
     var eventSlotsAdded = parkingplaces.SlotsAdded({}, '', function(error, result){
       if (!error) {
-        console.log(result.args.amount + " Slots added for place from " + result.args.place);
         addMarkerInfo(result.args.place, markers[result.args.place]);
         updateMarker(result.args.place);
       }
     });
     var eventReservation = parkingplaces.Reservation({}, '', function(error, result){
       if (!error) {
-        console.log("Reservation for place at " + result.args.place + " reserved from parker at " 
-          + result.args.parker + " until block number " + result.args.reservedBlock);
+        addMarkerInfo(result.args.place, markers[result.args.place]);
         updateMarker(result.args.place);
+        showMessage("Your reservation was successful", "for place at " + result.args.place + " from parker at " + result.args.parker + " until block number " + result.args.reservedBlock);
       }
     });
     var eventTransaction = parkingplaces.Transaction({}, '', function(error, result){
-      if (!error)
-        console.log("Payment to " + result.args.to + " with " + result.args.amount + " wei")
+      if (!error) {
+        payments.push("to " + result.args.to + " with " + result.args.amount + " wei");
+        console.log(payments);
+      }
     }); 
     GoogleMaps.ready('map', function(map) {
       //adding marker for each place
@@ -130,31 +133,51 @@ if (Meteor.isClient) {
   function addMarkerInfo(owner, marker) {
     //add info window as click event and remove existing animation and listener
     google.maps.event.clearInstanceListeners(marker);
+    //add info window to key-value-array
+    placeInfos[owner] = getPlaceInfowindow(owner);
     marker.addListener('click', function() {
       if (marker.getAnimation() !== null) {
         marker.setAnimation(null);
       }
-      //add information of place and slot from contract parkingplaces
-      var slotInfo = 
-        '<li><b>name: </b>' + places[owner][1] + '</li>' +
-        '<li><b>owner: </b>' + owner + '</li>' +
-        '<li><b>latitude: </b>' + places[owner][2] + '</li>' +
-        '<li><b>longitude: </b>' + places[owner][3] + '</li>' +
-        '<li><b>slots total: </b>' + parkingplaces.getSlotCount(owner) + '</li>' +
-        '<li><b>slots free: </b>' + parkingplaces.getFreeSlotCount(owner, EthBlocks.latest.number) + '</li>' +
-        '<li><b>next free slot: </b>' + parkingplaces.getNextFreeSlot(owner, EthBlocks.latest.number) + '</li>';
-      var infowindow = new google.maps.InfoWindow({
-        content: slotInfo
-      });
-      //add info window to key-value-array
-      placeInfos[owner] = infowindow;
-      infowindow.open(GoogleMaps.maps.map.instance, marker);
+      placeInfos[owner] = getPlaceInfowindow(owner);
+      placeInfos[owner].open(GoogleMaps.maps.map.instance, marker);
     });
+  }
+  
+  function getPlaceInfowindow(owner) {
+    //add information of place and slot from contract parkingplaces
+    var slotInfo = 
+      '<li><b>name: </b>' + places[owner][1] + '</li>' +
+      '<li><b>owner: </b>' + owner + '</li>' +
+      '<li><b>latitude: </b>' + places[owner][2] + '</li>' +
+      '<li><b>longitude: </b>' + places[owner][3] + '</li>' +
+      '<li><b>slots total: </b>' + parkingplaces.getSlotCount(owner) + '</li>' +
+      '<li><b>slots free: </b>' + parkingplaces.getFreeSlotCount(owner, EthBlocks.latest.number) + '</li>' +
+      '<li><b>next free slot: </b>' + parkingplaces.getNextFreeSlot(owner, EthBlocks.latest.number) + '</li>';
+    var infowindow = new google.maps.InfoWindow({
+      content: slotInfo
+    });
+    return infowindow;
   }
 
   function updateMarker(owner) {
+	  console.log(owner);
+	  console.log(placeInfos);
+	  console.log(markers);
     //close opened info window and animate marker
     placeInfos[owner].close();
+    GoogleMaps.maps.map.instance.setCenter(markers[owner].getPosition());
     markers[owner].setAnimation(google.maps.Animation.BOUNCE);
+  }
+  
+  function showMessage(header, message) {
+    console.log(message);
+    EthElements.Modal.show({
+      template: 'modal_info',
+      data: {
+        header: header,
+        message: message
+      }
+    });
   }
 }
