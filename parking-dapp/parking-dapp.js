@@ -8,11 +8,10 @@ if (Meteor.isClient) {
   const CONTRACT_ADDRESS = "0xded0a941b130e7617b5a3464cd43eab52e1f6793";
   //contract abstract binary interface (very long ;)
   const CONTRACT_ABI = [{"constant":true,"inputs":[{"name":"owner","type":"address"}],"name":"getSlotCount","outputs":[{"name":"count","type":"uint256"}],"type":"function"},{"constant":false,"inputs":[{"name":"owner","type":"address"},{"name":"amount","type":"uint256"}],"name":"addSlots","outputs":[],"type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"}],"name":"existsPlace","outputs":[{"name":"exists","type":"bool"}],"type":"function"},{"constant":false,"inputs":[],"name":"close","outputs":[],"type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"atBlock","type":"uint256"}],"name":"getFreeSlotCount","outputs":[{"name":"count","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"atBlock","type":"uint256"},{"name":"toBlock","type":"uint256"}],"name":"calculateEstimatedCosts","outputs":[{"name":"costs","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[],"name":"blockCosts","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"atBlock","type":"uint256"}],"name":"getNextFreeSlot","outputs":[{"name":"block","type":"uint256"}],"type":"function"},{"constant":false,"inputs":[{"name":"owner","type":"address"},{"name":"name","type":"string"},{"name":"lat","type":"string"},{"name":"long","type":"string"}],"name":"addPlace","outputs":[],"type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"parker","type":"address"}],"name":"getReservedBlock","outputs":[{"name":"block","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"places","outputs":[{"name":"owner","type":"address"},{"name":"name","type":"string"},{"name":"latitude","type":"string"},{"name":"longitude","type":"string"}],"type":"function"},{"constant":false,"inputs":[{"name":"owner","type":"address"},{"name":"time","type":"uint256"}],"name":"reserveSlot","outputs":[],"type":"function"},{"constant":true,"inputs":[],"name":"controller","outputs":[{"name":"","type":"address"}],"type":"function"},{"inputs":[{"name":"_blockCosts","type":"uint256"}],"type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"place","type":"address"},{"indexed":false,"name":"name","type":"string"},{"indexed":false,"name":"latitude","type":"string"},{"indexed":false,"name":"longitude","type":"string"}],"name":"PlaceAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"place","type":"address"},{"indexed":false,"name":"amount","type":"uint256"}],"name":"SlotsAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"place","type":"address"},{"indexed":false,"name":"parker","type":"address"},{"indexed":false,"name":"reservedBlock","type":"uint256"}],"name":"Reservation","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"to","type":"address"},{"indexed":false,"name":"amount","type":"uint256"}],"name":"Transaction","type":"event"}];
-  //todo: read contract storage for count places
-  const COUNT_PLACES = 19;
   //associative key-value arrays
   var markers = []; 
   var placeInfos = [];
+  var places = [];
   
   //initialize web3 and address of json rpc api from (needs running ethereum client allowing rpc)
   if(typeof web3 === 'undefined') {
@@ -56,12 +55,14 @@ if (Meteor.isClient) {
       if (!error) {
         console.log("Place '" + result.args.name + "' added from " + result.args.place + " at latitude " 
           + result.args.latitude + " and longitude " + result.args.longitude);
+        places[result.args.place] = [result.args.place, result.args.name, result.args.latitude, result.args.longitude];
+        addMarkerWithTimeout(result.args.place, TIMEOUT_ANIMATION);
       }
     });
     var eventSlotsAdded = parkingplaces.SlotsAdded({}, '', function(error, result){
       if (!error) {
         console.log(result.args.amount + " Slots added for place from " + result.args.place);
-        console.log(places.map.length);
+        addMarkerInfo(result.args.place, markers[result.args.place]);
         updateMarker(result.args.place);
       }
     });
@@ -78,8 +79,17 @@ if (Meteor.isClient) {
     }); 
     GoogleMaps.ready('map', function(map) {
       //adding marker for each place
-      for (var i = 0; i < COUNT_PLACES; i++) {
-        addMarkerWithTimeout(parkingplaces.places(i), i * TIMEOUT_ANIMATION);
+      var next = true;
+      var i = 0;
+      while (next === true) {
+        try {
+          places[parkingplaces.places(i)[0]] = parkingplaces.places(i);
+          addMarkerWithTimeout(parkingplaces.places(i)[0], i * TIMEOUT_ANIMATION);
+          i++;
+        }
+        catch(e) {
+          next = false;
+        }
       }
     });
   });
@@ -91,52 +101,51 @@ if (Meteor.isClient) {
     var seconds = "0" + date.getSeconds();
     return hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
   }
-  
-  function getIndex(array, key) {
-    for (var i = 0; i < array.map.length; i++) {
-      if (array[key] 
-  
-  function addMarkerWithTimeout(place, timeout) {
+
+  function addMarkerWithTimeout(owner, timeout) {
     //add marker at location of place from contract parkingplaces
     window.setTimeout(function() {
       var marker = new google.maps.Marker({
-        title: place[1],
-        position: {lat: Number(place[2]), lng: Number(place[3])},
+        title: places[owner][1],
+        position: {lat: Number(places[owner][2]), lng: Number(places[owner][3])},
         map: GoogleMaps.maps.map.instance,
         animation: google.maps.Animation.DROP
       });
       //add marker to key-value-array
-      markers[place[0]] = marker;
+      markers[owner] = marker;
       //adding information for each place
-      addMarkerInfo(place, marker);
+      addMarkerInfo(owner, marker);
     }, timeout);
   }
   
-  function addMarkerInfo(place, marker) {
-    //add information of place and slot from contract parkingplaces
-    var slotInfo = 
-      '<li><b>name: </b>' + place[1] + '</li>' +
-      '<li><b>owner: </b>' + place[0] + '</li>' +
-      '<li><b>latitude: </b>' + place[2] + '</li>' +
-      '<li><b>longitude: </b>' + place[3] + '</li>' +
-      '<li><b>slots total: </b>' + parkingplaces.getSlotCount(place[0]) + '</li>' +
-      '<li><b>slots free: </b>' + parkingplaces.getFreeSlotCount(place[0], EthBlocks.latest.number) + '</li>' +
-      '<li><b>next free slot: </b>' + parkingplaces.getNextFreeSlot(place[0], EthBlocks.latest.number) + '</li>'
-    var infowindow = new google.maps.InfoWindow({
-      content: slotInfo
-    });
-    //add info window to key-value-array
-    placeInfos[place[0]] = infowindow;
-    //add info window as click event
+  function addMarkerInfo(owner, marker) {
+    //add info window as click event and remove existing animation and listener
+    google.maps.event.clearInstanceListeners(marker);
     marker.addListener('click', function() {
       if (marker.getAnimation() !== null) {
         marker.setAnimation(null);
       }
+      //add information of place and slot from contract parkingplaces
+      var slotInfo = 
+        '<li><b>name: </b>' + places[owner][1] + '</li>' +
+        '<li><b>owner: </b>' + owner + '</li>' +
+        '<li><b>latitude: </b>' + places[owner][2] + '</li>' +
+        '<li><b>longitude: </b>' + places[owner][3] + '</li>' +
+        '<li><b>slots total: </b>' + parkingplaces.getSlotCount(owner) + '</li>' +
+        '<li><b>slots free: </b>' + parkingplaces.getFreeSlotCount(owner, EthBlocks.latest.number) + '</li>' +
+        '<li><b>next free slot: </b>' + parkingplaces.getNextFreeSlot(owner, EthBlocks.latest.number) + '</li>';
+      var infowindow = new google.maps.InfoWindow({
+        content: slotInfo
+      });
+      //add info window to key-value-array
+      placeInfos[owner] = infowindow;
       infowindow.open(GoogleMaps.maps.map.instance, marker);
     });
   }
-  
-  function updateMarker(place) {
-    markers[place].setAnimation(google.maps.Animation.BOUNCE);
+
+  function updateMarker(owner) {
+    //close opened info window and animate marker
+    placeInfos[owner].close();
+    markers[owner].setAnimation(google.maps.Animation.BOUNCE);
   }
 }
