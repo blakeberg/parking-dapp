@@ -49,7 +49,7 @@ contract ParkingPlaces {
         
     event SlotsAdded(address place, uint amount);
     event Reservation(address place, address parker, uint reservedBlock);
-    event Transaction(address to, uint amount);
+    event Transaction(address fromOrigin, address to, uint amount);
     
     /// @dev msg.sender will set as controller
     /// @notice creation of this contract 
@@ -224,7 +224,7 @@ contract ParkingPlaces {
     /// @param amount amount to pay
     function oneTransaction(address to, uint amount) internal {
         to.send(amount);
-        Transaction(to, amount);
+        Transaction(msg.sender, to, amount);
     }
     
     /// @dev called from reserveSlot and throws if no free slot found
