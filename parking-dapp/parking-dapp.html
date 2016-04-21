@@ -24,14 +24,24 @@
       {{> dapp_addressInput placeholder=contractController disabled="true"}}
       <br>
       Select your account to pay for a parking place reservation:
+      <div class="from">
       {{> dapp_selectAccount accounts=accounts showAccountTypes=true}}
+      </div>
       <br>
+      <small>
       {{dapp_formatBalance "1000000000000000000" "0,0.00[000] UNIT"}} = 
       {{dapp_formatBalance "1000000000000000000" "0,0.00[0000] UNIT" "btc"}} = 
       {{dapp_formatBalance "1000000000000000000" "0,0.00 UNIT" "eur"}}
+      </small>
       <br>
       You have to pay {{dapp_formatBalance contractParkingCosts "0,0.00[000] UNIT"}} per parking block.
       <br><br>
+      Insert place address:
+      <div class="to">
+      {{> dapp_addressInput}}
+      </div>
+      <div class="block" align="right">Reserve until block.....<input type="number" name="block" min={{currentBlockNumber}} class="dapp-small" pattern="[0-9]*"></div>
+      <button type="submit" class="dapp-block-button">Park now</button>
       <h4>Your contract payments</h4>
       {{#each contractPayments}}
       <li>{{this}}</li>

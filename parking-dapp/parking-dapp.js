@@ -32,6 +32,9 @@ if (Meteor.isClient) {
   //template for block and time information
   Template.dapp.helpers({
     currentBlockNumber: function() {
+      console.log(TemplateVar.getFrom('.from .dapp-select-account', 'value'));
+      console.log(TemplateVar.getFrom('.to .dapp-address-input', 'value'));
+      console.log(TemplateVar.getFrom('.block .dapp-small', 'value'));
       return EthBlocks.latest.number;
     },
     accounts: function () {
@@ -50,8 +53,7 @@ if (Meteor.isClient) {
       return parkingplaces.blockCosts();
     },
     contractPayments: function () {
-      console.log("block " + EthBlocks.latest.number + " at " + formatTS(EthBlocks.latest.timestamp));
-	  console.log(payments);
+      console.log(EthBlocks.latest.number + " at " + formatTS(EthBlocks.latest.timestamp));
       return payments;
     },
     mapOptions: function() {
