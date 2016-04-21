@@ -32,9 +32,9 @@
       <br>
       You have to pay {{dapp_formatBalance contractParkingCosts "0,0.00[000] UNIT"}} per parking block.
       <br><br>
-      Your payments:<br>
-      {{#each payments}}
-        <li>{{> payments}}</li>
+      <h4>Your contract payments</h4>
+      {{#each contractPayments}}
+      <li>{{this}}</li>
       {{/each}}
     </aside>
     <!-- content-->

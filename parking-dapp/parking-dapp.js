@@ -50,6 +50,8 @@ if (Meteor.isClient) {
       return parkingplaces.blockCosts();
     },
     contractPayments: function () {
+      console.log("block " + EthBlocks.latest.number + " at " + formatTS(EthBlocks.latest.timestamp));
+	  console.log(payments);
       return payments;
     },
     mapOptions: function() {
@@ -80,15 +82,22 @@ if (Meteor.isClient) {
       if (!error) {
         addMarkerInfo(result.args.place, markers[result.args.place]);
         updateMarker(result.args.place);
-        showMessage("Your reservation was successful", "for place at " + result.args.place + " from parker at " + result.args.parker + " until block number " + result.args.reservedBlock);
+        if (isOwnAccount(result.args.parker)) {
+          showMessage("Your reservation was successful", "for place at " + result.args.place + " from parker at " + result.args.parker + " until block number " + result.args.reservedBlock);
+        }
       }
     });
     var eventTransaction = parkingplaces.Transaction({}, '', function(error, result){
       if (!error) {
-        payments.push("to " + result.args.to + " with " + result.args.amount + " wei");
-        console.log(payments);
+        if (isOwnAccount(result.args.fromOrigin)) {
+          payments.push("payed " + web3.fromWei(result.args.amount, "ether") + " ether");
+        }
+        if (isOwnAccount(result.args.to)) {
+          payments.push("got payback " + web3.fromWei(result.args.amount, "ether") + " ether");
+        }
+        console.log("Payment was successful to " + result.args.to + " with " + web3.fromWei(result.args.amount, "ether") + " ether");
       }
-    }); 
+    });
     GoogleMaps.ready('map', function(map) {
       //adding marker for each place
       var next = true;
@@ -105,6 +114,15 @@ if (Meteor.isClient) {
       }
     });
   });
+  
+  function isOwnAccount(address) {
+    for (i = 0; i < EthAccounts.find().fetch().length; i++) {
+      if (EthAccounts.find().fetch()[i].address === address) {
+        return true;
+      }
+    }
+    return false;
+  }
   
   function formatTS(timestamp) {
     var date = new Date(timestamp * 1000);
@@ -161,9 +179,6 @@ if (Meteor.isClient) {
   }
 
   function updateMarker(owner) {
-	  console.log(owner);
-	  console.log(placeInfos);
-	  console.log(markers);
     //close opened info window and animate marker
     placeInfos[owner].close();
     GoogleMaps.maps.map.instance.setCenter(markers[owner].getPosition());
@@ -171,7 +186,7 @@ if (Meteor.isClient) {
   }
   
   function showMessage(header, message) {
-    console.log(message);
+    console.log(header + " " + message);
     EthElements.Modal.show({
       template: 'modal_info',
       data: {
