@@ -40,7 +40,13 @@
       <div class="to">
       {{> dapp_addressInput}}
       </div>
-      <div class="block" align="right">Reserve until block.....<input type="number" name="block" min={{currentBlockNumber}} class="dapp-small" pattern="[0-9]*"></div>
+      <div align="right">
+        <form class="block">Reserve until block....
+          <input type="number" name="block" min={{currentBlockNumber}} placeholder="type block number min. {{currentBlockNumber}}" pattern="[0-9]*" title="tooltip">
+          <small>hit enter to set block number and calculate costs</small>
+        </form>
+      </div>
+      <small>Your estimated costs is {{dapp_formatBalance estimatedParkingCosts "0,0.00[000] UNIT"}}.</small>
       <button type="submit" class="dapp-block-button">Park now</button>
       <h4>Your contract payments</h4>
       {{#each contractPayments}}

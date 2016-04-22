@@ -13,6 +13,7 @@ if (Meteor.isClient) {
   var placeInfos = [];
   var places = [];
   var payments = [];
+  var block;
   
   //initialize web3 and address of json rpc api from (needs running ethereum client allowing rpc)
   if(typeof web3 === 'undefined') {
@@ -32,9 +33,6 @@ if (Meteor.isClient) {
   //template for block and time information
   Template.dapp.helpers({
     currentBlockNumber: function() {
-      console.log(TemplateVar.getFrom('.from .dapp-select-account', 'value'));
-      console.log(TemplateVar.getFrom('.to .dapp-address-input', 'value'));
-      console.log(TemplateVar.getFrom('.block .dapp-small', 'value'));
       return EthBlocks.latest.number;
     },
     accounts: function () {
@@ -56,6 +54,9 @@ if (Meteor.isClient) {
       console.log(EthBlocks.latest.number + " at " + formatTS(EthBlocks.latest.timestamp));
       return payments;
     },
+    estimatedParkingCosts: function () {
+      return parkingplaces.calculateEstimatedCosts(TemplateVar.getFrom('.to .dapp-address-input', 'value'), EthBlocks.latest.number, block);
+    },
     mapOptions: function() {
       if (GoogleMaps.loaded()) {
         return {
@@ -63,6 +64,16 @@ if (Meteor.isClient) {
           zoom: MAP_ZOOM
         };
       }
+    }
+  });
+  
+  Template.dapp.events({
+    'submit .block'(event) {
+      // Prevent default browser form submit
+      event.preventDefault();
+      block = event.target.block.value;
+      var estimation = parkingplaces.calculateEstimatedCosts(TemplateVar.getFrom('.to .dapp-address-input', 'value'), EthBlocks.latest.number, block);
+      showMessage("Estimated costs", "Your estimated costs for place " + TemplateVar.getFrom('.to .dapp-address-input', 'value') + " to block " + block + " is " + web3.fromWei(estimation, "ether") + " ether");
     }
   });
   
