@@ -425,11 +425,19 @@ if (Meteor.isClient) {
                 EthElements.Modal.question({
                     text: msg,
                     ok: function(){
-                        var result = reservation(to, block, estimation);
-                        console.log(result);
+                        console.log(reservation(to, block, estimation));
                     },
                     cancel: true
                 });
+            }
+        },
+        'click .dapp-tag-button'(event) {
+            // Prevent default browser form submit
+            event.preventDefault();
+            var to = TemplateVar.getFrom('.to .dapp-address-input', 'value');
+            // pass block number cause we need only to validate the address
+            if (isDataValid(to, EthBlocks.latest.number + 10)) {
+                validateParking(to);
             }
         }
     });
@@ -531,6 +539,26 @@ if (Meteor.isClient) {
     });
 
     /**
+     * Validate the parking for selected address and a place to show the result in a message
+     * @param to the address of the parking place
+     */
+    function validateParking(to) {
+        var from = TemplateVar.getFrom('.from .dapp-select-account', 'value');
+        var reservedBlock = parkingplaces.getReservedBlock(to, from);
+        if (reservedBlock.equals(0)) {
+            showMessage("Parking validation", "You have no parking reservation for place");
+        }
+        else {
+            if (reservedBlock.greaterThan(EthBlocks.latest.number)) {
+                showMessage("Parking validation", "You can parking for place until block number " + reservedBlock);
+            }
+            else {
+                showMessage("Parking validation", "Your parking for place is over since block number " + reservedBlock);
+            }
+        }
+    }
+
+    /**
      * Verify if address exists as place with free slots in contract and block number is in future,
      * if not show a corresponding message for all cases
      * @param to address of a place in contract
@@ -550,7 +578,6 @@ if (Meteor.isClient) {
                     showMessage("Data verification", "Please insert an block number in future");
                 }
                 else {
-                    console.log(parkingplaces.getFreeSlotCount(to, EthBlocks.latest.number));
                     if (parkingplaces.getFreeSlotCount(to, EthBlocks.latest.number).equals(0)) {
                         showMessage("Data verification", "Please wait for free slots or take another place");
                     }
@@ -564,11 +591,11 @@ if (Meteor.isClient) {
     }
 
     /**
-     *
-     * @param to
-     * @param block
-     * @param value
-     * @returns {*}
+     * Make a reservation if account for selected address is unlocked for place until future block.
+     * @param to the address of the parking place
+     * @param block the block until which to reserve
+     * @param value the costs in wei to pay
+     * @returns {*} the hash of the transaction
      */
     function reservation(to, block, value) {
         var from = TemplateVar.getFrom('.from .dapp-select-account', 'value');
