@@ -405,12 +405,27 @@ if (Meteor.isClient) {
         'submit .block'(event) {
             // Prevent default browser form submit
             event.preventDefault();
-            block = event.target.block.value;
-            var estimation = parkingplaces.calculateEstimatedCosts(
-                TemplateVar.getFrom('.to .dapp-address-input', 'value'), EthBlocks.latest.number, block);
-            showMessage("Estimated costs", "Your estimated costs for place " +
-                TemplateVar.getFrom('.to .dapp-address-input', 'value') + " to block " + block + " is " +
-                web3.fromWei(estimation, "ether") + " ether");
+            var from = TemplateVar.getFrom('.to .dapp-address-input', 'value');
+            if (from === 'undefined') {
+                showMessage("Data verification", "Please insert place address");
+            }
+            else {
+                if (!parkingplaces.existsPlace(from)) {
+                    showMessage("Data verification", "Please insert an existing place address");
+                }
+                else {
+                    if (event.target.block.value <= EthBlocks.latest.number) {
+                        showMessage("Data verification", "Please insert an block number in future");
+                    }
+                    else {
+                        block = event.target.block.value;
+                        var estimation = parkingplaces.calculateEstimatedCosts(from, EthBlocks.latest.number, block);
+                        showMessage("Estimated costs", "Your estimated costs for place " + from + " from block " +
+                            EthBlocks.latest.number + " to block " + block + " is " +
+                            web3.fromWei(estimation, "ether") + " ether");
+                    }
+                }
+            }
         }
     });
 
