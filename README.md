@@ -1,4 +1,4 @@
-# parking-dapp
+# Dapp Parking Places
 A Parking Dapp on Ethereum Blockchain.
 ## User interface
 See on own site <https://github.com/blakeberg/parking-dapp/tree/master/parking-dapp>
