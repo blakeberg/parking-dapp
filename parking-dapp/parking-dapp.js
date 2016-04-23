@@ -407,14 +407,14 @@ if (Meteor.isClient) {
             // Prevent default browser form submit
             event.preventDefault();
             var to = TemplateVar.getFrom('.to .dapp-address-input', 'value');
-            var estimation = parkingplaces.calculateEstimatedCosts(to, EthBlocks.latest.number, block);
-            if (isDataValid(to, block)) {
+            var estimatedCosts = parkingplaces.calculateEstimatedCosts(to, EthBlocks.latest.number, block);
+            if (isDataValid(to, block) && validateBalance(estimatedCosts)) {
                 var msg = "Do you want to reserve place " + to + " until block " + block + " and pay " +
-                    web3.fromWei(estimation, "ether") + " ether?";
+                    web3.fromWei(estimatedCosts, "ether") + " ether?";
                 EthElements.Modal.question({
                     text: msg,
                     ok: function(){
-                        console.log("transaction hash: " + reservation(to, block, estimation));
+                        console.log("transaction hash: " + reservation(to, block, estimatedCosts));
                     },
                     cancel: true
                 });
@@ -529,6 +529,29 @@ if (Meteor.isClient) {
             }
         });
     });
+
+    /**
+     * Check if balance of selected account ist greater than amount
+     * @param amount of wei to check for
+     * @returns {boolean} true if balance of selected account is sufficient
+     */
+    function validateBalance(amount) {
+        var from = TemplateVar.getFrom('.from .dapp-select-account', 'value');
+        for (i = 0; i < EthAccounts.find().fetch().length; i++) {
+            if (EthAccounts.find().fetch()[i].address === from) {
+                if (amount.lessThan(EthAccounts.find().fetch()[i].balance)) {
+                    return true;
+                }
+                else {
+                    showMessage("Data verification", "Please choose an account with a balance of minimal " +
+                        web3.fromWei(amount, "ether") + " ether");
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
 
     /**
      * Validate the parking for selected address and a place to show the result in a message
