@@ -53,9 +53,11 @@
                 <button type="submit" class="dapp-large">Check parking</button>
             </div>
             <h4>Your contract payments</h4>
-            {{#each contractPayments}}
-                <li>{{this}}</li>
-            {{/each}}
+            <small>
+                {{#each contractPayments}}
+                    <li>{{this}}</li>
+                {{/each}}
+            </small>
         </aside>
         <!-- content-->
         <main class="dapp-content">
