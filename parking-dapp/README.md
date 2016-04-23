@@ -1,5 +1,5 @@
 #User Interface for Dapp
-A Dapp has one or more contracts and an UI to interact with them. For the contract see <https://github.com/blakeberg/parking-dapp>
+A Dapp has one or more contracts and an UI to interact with them. For contract see <https://github.com/blakeberg/parking-dapp>
 
 ![](https://raw.githubusercontent.com/blakeberg/parking-dapp/master/parking-dapp/ressources/pp-overview.png)
 
