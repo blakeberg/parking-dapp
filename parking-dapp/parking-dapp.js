@@ -405,26 +405,13 @@ if (Meteor.isClient) {
         'submit .block'(event) {
             // Prevent default browser form submit
             event.preventDefault();
-            var from = TemplateVar.getFrom('.to .dapp-address-input', 'value');
-            if (from === 'undefined') {
-                showMessage("Data verification", "Please insert place address");
-            }
-            else {
-                if (!parkingplaces.existsPlace(from)) {
-                    showMessage("Data verification", "Please insert an existing place address");
-                }
-                else {
-                    if (event.target.block.value <= EthBlocks.latest.number) {
-                        showMessage("Data verification", "Please insert an block number in future");
-                    }
-                    else {
-                        block = event.target.block.value;
-                        var estimation = parkingplaces.calculateEstimatedCosts(from, EthBlocks.latest.number, block);
-                        showMessage("Estimated costs", "Your estimated costs for place " + from + " from block " +
-                            EthBlocks.latest.number + " to block " + block + " is " +
-                            web3.fromWei(estimation, "ether") + " ether");
-                    }
-                }
+            var to = TemplateVar.getFrom('.to .dapp-address-input', 'value');
+            if (isDataValid(to, event.target.block.value)) {
+                block = event.target.block.value;
+                var estimation = parkingplaces.calculateEstimatedCosts(to, EthBlocks.latest.number, block);
+                showMessage("Estimated costs", "Your estimated costs for place " + to + " from block " +
+                    EthBlocks.latest.number + " to block " + block + " is " + web3.fromWei(estimation, "ether") +
+                    " ether");
             }
         }
     });
@@ -524,6 +511,32 @@ if (Meteor.isClient) {
             }
         });
     });
+
+    /**
+     * Verify if address exists as place in contract and block number is in future, if not show it as message
+     * @param to address of a place in contract
+     * @param block number to reserve or estimate costs
+     * @returns {boolean} true if data valid
+     */
+    function isDataValid(to, block) {
+        if (to === 'undefined') {
+            showMessage("Data verification", "Please insert place address");
+        }
+        else {
+            if (!parkingplaces.existsPlace(to)) {
+                showMessage("Data verification", "Please insert an existing place address");
+            }
+            else {
+                if (event.target.block.value <= EthBlocks.latest.number) {
+                    showMessage("Data verification", "Please insert an block number in future");
+                }
+                else {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     /**
      * Checks if the address is one of your ethereum accounts
