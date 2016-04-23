@@ -6,3 +6,7 @@ html, body {
 h1 {
     margin-bottom: 24px !important;
 }
+
+input {
+    margin-top : 0 !important;
+}
