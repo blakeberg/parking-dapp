@@ -403,18 +403,6 @@ if (Meteor.isClient) {
 
     //handle events from dapp template
     Template.dapp.events({
-        'submit .block'(event) {
-            // Prevent default browser form submit
-            event.preventDefault();
-            var to = TemplateVar.getFrom('.to .dapp-address-input', 'value');
-            if (isDataValid(to, event.target.block.value)) {
-                block = event.target.block.value;
-                var estimation = parkingplaces.calculateEstimatedCosts(to, EthBlocks.latest.number, block);
-                showMessage("Estimated costs", "Your estimated costs for place " + to + " from block " +
-                    EthBlocks.latest.number + " to block " + block + " is " + web3.fromWei(estimation, "ether") +
-                    " ether");
-            }
-        },
         'click .dapp-block-button'(event) {
             // Prevent default browser form submit
             event.preventDefault();
@@ -440,6 +428,12 @@ if (Meteor.isClient) {
             if (isDataValid(to, EthBlocks.latest.number + 10)) {
                 validateParking(to);
             }
+        },
+        'change .block'(event) {
+            // Prevent default browser form submit
+            event.preventDefault();
+            block = event.target.value;
+            console.log(event.target.value);
         }
     });
 
