@@ -1,9 +1,12 @@
-# parking-dapp
+# Dapp Parking Places
 A Parking Dapp on Ethereum Blockchain.
+## User interface
+See on own section <https://github.com/blakeberg/parking-dapp/tree/master/parking-dapp>
 
+## Contract
 The code `ParkingPlaces.sol` were published under `/contracts` in this repository. 
 
-## Installing
+### Installing
 **A docker container "geth-node" with geth and solc is already available**. You can also take the online compiler and connect them to local Ethereum client or docker container.
 
 Starting Ethereum client for solidity online compiler.
@@ -11,7 +14,7 @@ Starting Ethereum client for solidity online compiler.
 
 Look for installed compiler with `geth attach` and `eth.getCompilers()`. If there is no compiler `['Solidity']` install a compiler and link its path with `admin.setSolc("path/to/solc")`.
 
-## Compile contract
+### Compile contract
 With solidity online compiler or from JavaScript console of Ethereum client. 
 It will also generates a Web3 deploy script used in next part.
 
@@ -31,7 +34,7 @@ It will also generates a Web3 deploy script used in next part.
 		}
 	);
 
-## Deploy contract
+### Deploy contract
 With solidity online compiler you can connect to Web3 Provider and deploy contracts directly.You have to unlook your account before. Or you deploy from JavaScript console of running Ethereum client with installed solc.
 
 > The used JavaScript already includes the compile step!
@@ -43,7 +46,7 @@ With solidity online compiler you can connect to Web3 Provider and deploy contra
 
 > If you got an "Error in contract creation: Error: Contract transaction couldn't be found after 50 blocks" look for contract creation in blockchain explorer for you account and load it from contract address in next step.
 
-## Use contract
+### Use contract
 
 If you want to load an existing contract you need the ABI specification *(see link below or get it from solidity online compiler)* and the contract address:
 
@@ -87,7 +90,7 @@ You need an account to pay gas and/or transfer value `parkingplaces.<Methodname>
 * Reservation
 * Transaction
 
-### Register events
+#### Register events
 
 1. Add an Event for added place notification:
 
@@ -122,7 +125,7 @@ You need an account to pay gas and/or transfer value `parkingplaces.<Methodname>
 
 > You can see triggered events also in Event Logs of a transaction in blockchain explorer.
 
-### Places and Slots
+#### Places and Slots
 A place is unique by its address (owner) in this example address `eth.accounts[0]`.
 
 1. Add place type `parkingplaces.addPlace(eth.accounts[0], "Berlin", "52.5243700", "13.4105300", {from:eth.accounts[0], gas: 300000});`
@@ -138,7 +141,7 @@ A place is unique by its address (owner) in this example address `eth.accounts[0
 
 > You will get notifications for added places and slots if you have it registered before.
 
-### Reservation and Payment
+#### Reservation and Payment
 A reservation can be applied on slots and save the address of parker and a blocknumber until the reservation is valid.
 
 1. To calculate estimated costs for a 15 blocks reservation at place type `parkingplaces.calculateEstimatedCosts(eth.accounts[0], eth.blockNumber, eth.blockNumber + 15)`
@@ -167,7 +170,7 @@ A reservation can be applied on slots and save the address of parker and a block
 	* if the value is equals eth.blockNumber but negativ the place or parker not exists
 	* otherwise the reservation is in past
 
-## Initialize parking city
+### Initialize parking city
 This is the initialization of this contract for the city Oldenburg in Germany with 18 parking places as this example. For this if you should start from scratch with on account with at least 10 Ether in it.
 
 > You can show parking places and slots for Oldenburg at a map *(see link below)*
@@ -207,25 +210,25 @@ This is the initialization of this contract for the city Oldenburg in Germany wi
 	* `parkingplaces.getFreeSlotCount(eth.accounts[1], eth.blockNumber-100)` to `parkingplaces.getFreeSlotCount(eth.accounts[18], eth.blockNumber - 100)` is allways 0
 	* `parkingplaces.getNextFreeSlot(eth.accounts[1], eth.blockNumber)` to `parkingplaces.getNextFreeSlot(eth.accounts[1], eth.blockNumber)` is allways lower than `eth.blockNumber`
 
-## Generate documentation
+### Generate documentation
 
-### Natspec 
+#### Natspec 
 
 - `solc --userdoc ParkingPlaces.sol > pp-userdoc.json`
 - `solc --devdoc ParkingPlaces.sol > pp-devdoc.json`
 
-### ABI
+#### ABI
 Abstract binary interface `solc --abi ParkingPlaces.sol > pp-userdoc.json` 
 
-### AST
+#### AST
 Abstract syntax tree `solc --ast-json ParkingPlaces.sol > pp-ast.json`
 
-### ASM
+#### ASM
 Assembler source languge with Ethereum virtual machine opcodes
 
 	`solc --asm-json ParkingPlaces.sol > pp-asm.json`
 
-## Useful links
+### Useful links
 - Solidity online compiler <http://chriseth.github.io/browser-solidity>
 - Blockchain Explorer for Testnet <http://testnet.etherscan.io>
 - Line Break Removal Tool <http://www.textfixer.com/tools/remove-line-breaks.php>
