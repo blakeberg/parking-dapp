@@ -433,7 +433,6 @@ if (Meteor.isClient) {
             // Prevent default browser form submit
             event.preventDefault();
             block = event.target.value;
-            console.log(event.target.value);
         }
     });
 
