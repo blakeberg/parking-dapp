@@ -31,3 +31,8 @@ You should your own deployed contract cause this is volatile. Then you should ch
     //contract address
     const CONTRACT_ADDRESS = "0xded0a941b130e7617b5a3464cd43eab52e1f6793";
 
+## Detailled description
+
+![](https://raw.githubusercontent.com/blakeberg/parking-dapp/master/parking-dapp/ressources/pp-overview-description.png)
+
+
