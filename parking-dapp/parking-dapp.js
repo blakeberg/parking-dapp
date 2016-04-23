@@ -414,7 +414,7 @@ if (Meteor.isClient) {
                 EthElements.Modal.question({
                     text: msg,
                     ok: function(){
-                        console.log(reservation(to, block, estimation));
+                        console.log("transaction hash: " + reservation(to, block, estimation));
                     },
                     cancel: true
                 });
@@ -465,7 +465,6 @@ if (Meteor.isClient) {
              */
             function (error, result) {
                 if (!error) {
-                    addMarkerInfo(result.args.place);
                     updateMarker(result.args.place);
                 }
                 else {
@@ -481,7 +480,6 @@ if (Meteor.isClient) {
              */
             function (error, result) {
                 if (!error) {
-                    addMarkerInfo(result.args.place);
                     updateMarker(result.args.place);
                     if (isOwnAccount(result.args.parker)) {
                         showMessage("Your reservation was successful", "for place at " + result.args.place +
@@ -570,7 +568,7 @@ if (Meteor.isClient) {
             }
             else {
                 if (block === undefined || block <= EthBlocks.latest.number) {
-                    showMessage("Data verification", "Please insert an block number in future");
+                    showMessage("Data verification", "Please insert a block number in future");
                 }
                 else {
                     if (parkingplaces.getFreeSlotCount(to, EthBlocks.latest.number).equals(0)) {
@@ -653,11 +651,19 @@ if (Meteor.isClient) {
         //add info window as click event and remove existing animation and listener
         var marker = markers[owner];
         google.maps.event.clearInstanceListeners(marker);
+        //close infowindow if existing
+        if (placeInfos[owner] !== undefined) {
+            placeInfos[owner].setMap(null);
+        }
         //add info window to key-value-array
         placeInfos[owner] = getPlaceInfowindow(owner);
         marker.addListener('click', function () {
             if (marker.getAnimation() !== null) {
                 marker.setAnimation(null);
+            }
+            //close infowindow if existing
+            if (placeInfos[owner] !== undefined) {
+                placeInfos[owner].setMap(null);
             }
             placeInfos[owner] = getPlaceInfowindow(owner);
             placeInfos[owner].open(GoogleMaps.maps.map.instance, marker);
@@ -685,13 +691,13 @@ if (Meteor.isClient) {
     }
 
     /**
-     * Closes an opend infowindow, centers and animates updated marker
+     * Centers and animates updated marker
      * @param owner the place address and key for all key value array
      */
     function updateMarker(owner) {
-        placeInfos[owner].close();
         GoogleMaps.maps.map.instance.setCenter(markers[owner].getPosition());
         markers[owner].setAnimation(google.maps.Animation.BOUNCE);
+        addMarkerInfo(owner);
     }
 
     /**
