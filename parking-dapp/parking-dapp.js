@@ -425,7 +425,8 @@ if (Meteor.isClient) {
                 EthElements.Modal.question({
                     text: msg,
                     ok: function(){
-                        //todo: place a reservation
+                        var result = reservation(to, block, estimation);
+                        console.log(result);
                     },
                     cancel: true
                 });
@@ -530,7 +531,8 @@ if (Meteor.isClient) {
     });
 
     /**
-     * Verify if address exists as place in contract and block number is in future, if not show it as message
+     * Verify if address exists as place with free slots in contract and block number is in future,
+     * if not show a corresponding message for all cases
      * @param to address of a place in contract
      * @param block number to reserve or estimate costs
      * @returns {boolean} true if data valid
@@ -548,11 +550,29 @@ if (Meteor.isClient) {
                     showMessage("Data verification", "Please insert an block number in future");
                 }
                 else {
-                    return true;
+                    console.log(parkingplaces.getFreeSlotCount(to, EthBlocks.latest.number));
+                    if (parkingplaces.getFreeSlotCount(to, EthBlocks.latest.number).equals(0)) {
+                        showMessage("Data verification", "Please wait for free slots or take another place");
+                    }
+                    else {
+                        return true;
+                    }
                 }
             }
         }
         return false;
+    }
+
+    /**
+     *
+     * @param to
+     * @param block
+     * @param value
+     * @returns {*}
+     */
+    function reservation(to, block, value) {
+        var from = TemplateVar.getFrom('.from .dapp-select-account', 'value');
+        return parkingplaces.reserveSlot(to, block, {from: from, gas: 300000, value: value});
     }
 
     /**
