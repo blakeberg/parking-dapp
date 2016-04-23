@@ -4,6 +4,7 @@ if (Meteor.isClient) {
     const MAP_ZOOM = 15;
     const CENTER = {lat: 53.143722, lng: 8.214059};
     const TIMEOUT_ANIMATION = 200;
+    const ETH_RPC_ADDRESS = 'http://localhost:8545';
     //contract address
     const CONTRACT_ADDRESS = "0xded0a941b130e7617b5a3464cd43eab52e1f6793";
     //contract abstract binary interface in JSON format
@@ -349,7 +350,7 @@ if (Meteor.isClient) {
 
     //initialize web3 and address of json rpc api from (needs running ethereum client allowing rpc)
     if (typeof web3 === 'undefined') {
-        web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+        web3 = new Web3(new Web3.providers.HttpProvider(ETH_RPC_ADDRESS));
     }
     //EthBlocks with last 50 block information auto updating
     EthBlocks.init();
@@ -431,7 +432,7 @@ if (Meteor.isClient) {
                 });
             }
         },
-        'click .dapp-tag-button'(event) {
+        'click .dapp-large'(event) {
             // Prevent default browser form submit
             event.preventDefault();
             var to = TemplateVar.getFrom('.to .dapp-address-input', 'value');
@@ -470,7 +471,7 @@ if (Meteor.isClient) {
              */
             function (error, result) {
                 if (!error) {
-                    addMarkerInfo(result.args.place, markers[result.args.place]);
+                    addMarkerInfo(result.args.place);
                     updateMarker(result.args.place);
                 }
                 else {
@@ -486,7 +487,7 @@ if (Meteor.isClient) {
              */
             function (error, result) {
                 if (!error) {
-                    addMarkerInfo(result.args.place, markers[result.args.place]);
+                    addMarkerInfo(result.args.place);
                     updateMarker(result.args.place);
                     if (isOwnAccount(result.args.parker)) {
                         showMessage("Your reservation was successful", "for place at " + result.args.place +
@@ -546,11 +547,11 @@ if (Meteor.isClient) {
         var from = TemplateVar.getFrom('.from .dapp-select-account', 'value');
         var reservedBlock = parkingplaces.getReservedBlock(to, from);
         if (reservedBlock.equals(0)) {
-            showMessage("Parking validation", "You have no parking reservation for place");
+            showMessage("Parking validation", "You never had a parking reservation for this place");
         }
         else {
             if (reservedBlock.greaterThan(EthBlocks.latest.number)) {
-                showMessage("Parking validation", "You can parking for place until block number " + reservedBlock);
+                showMessage("Parking validation", "You can park for place until block number " + reservedBlock);
             }
             else {
                 showMessage("Parking validation", "Your parking for place is over since block number " + reservedBlock);
@@ -646,17 +647,17 @@ if (Meteor.isClient) {
             //add marker to key-value-array
             markers[owner] = marker;
             //adding information for each place
-            addMarkerInfo(owner, marker);
+            addMarkerInfo(owner);
         }, timeout);
     }
 
     /**
      * Clear all listener for an existing marker, create a new click listener with actual infowindow
      * @param owner the place address and key for all key value array
-     * @param marker {google.maps.Marker} an marker of google maps api
      */
-    function addMarkerInfo(owner, marker) {
+    function addMarkerInfo(owner) {
         //add info window as click event and remove existing animation and listener
+        var marker = markers[owner];
         google.maps.event.clearInstanceListeners(marker);
         //add info window to key-value-array
         placeInfos[owner] = getPlaceInfowindow(owner);
