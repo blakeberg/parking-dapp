@@ -413,6 +413,23 @@ if (Meteor.isClient) {
                     EthBlocks.latest.number + " to block " + block + " is " + web3.fromWei(estimation, "ether") +
                     " ether");
             }
+        },
+        'click .dapp-block-button'(event) {
+            // Prevent default browser form submit
+            event.preventDefault();
+            var to = TemplateVar.getFrom('.to .dapp-address-input', 'value');
+            var estimation = parkingplaces.calculateEstimatedCosts(to, EthBlocks.latest.number, block);
+            if (isDataValid(to, block)) {
+                var msg = "Do you want to reserve place " + to + " until block " + block + " and pay " +
+                    web3.fromWei(estimation, "ether") + " ether?";
+                EthElements.Modal.question({
+                    text: msg,
+                    ok: function(){
+                        //todo: place a reservation
+                    },
+                    cancel: true
+                });
+            }
         }
     });
 
@@ -527,7 +544,7 @@ if (Meteor.isClient) {
                 showMessage("Data verification", "Please insert an existing place address");
             }
             else {
-                if (event.target.block.value <= EthBlocks.latest.number) {
+                if (block === undefined || block <= EthBlocks.latest.number) {
                     showMessage("Data verification", "Please insert an block number in future");
                 }
                 else {
