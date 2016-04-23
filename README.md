@@ -1,7 +1,7 @@
 # Dapp Parking Places
 A Parking Dapp on Ethereum Blockchain.
 ## User interface
-See on own site <https://github.com/blakeberg/parking-dapp/tree/master/parking-dapp>
+See on own section <https://github.com/blakeberg/parking-dapp/tree/master/parking-dapp>
 
 ## Contract
 The code `ParkingPlaces.sol` were published under `/contracts` in this repository. 
