@@ -7,339 +7,14 @@ if (Meteor.isClient) {
     const ETH_RPC_ADDRESS = 'http://localhost:8545';
     //contract address
     const CONTRACT_ADDRESS = "0xded0a941b130e7617b5a3464cd43eab52e1f6793";
-    //contract abstract binary interface in JSON format
-    const CONTRACT_ABI = [
-        {
-            "constant": true,
-            "inputs": [
-                {
-                    "name": "owner",
-                    "type": "address"
-                }
-            ],
-            "name": "getSlotCount",
-            "outputs": [
-                {
-                    "name": "count",
-                    "type": "uint256"
-                }
-            ],
-            "type": "function"
-        },
-        {
-            "constant": false,
-            "inputs": [
-                {
-                    "name": "owner",
-                    "type": "address"
-                },
-                {
-                    "name": "amount",
-                    "type": "uint256"
-                }
-            ],
-            "name": "addSlots",
-            "outputs": [],
-            "type": "function"
-        },
-        {
-            "constant": true,
-            "inputs": [
-                {
-                    "name": "owner",
-                    "type": "address"
-                }
-            ],
-            "name": "existsPlace",
-            "outputs": [
-                {
-                    "name": "exists",
-                    "type": "bool"
-                }
-            ],
-            "type": "function"
-        },
-        {
-            "constant": false,
-            "inputs": [],
-            "name": "close",
-            "outputs": [],
-            "type": "function"
-        },
-        {
-            "constant": true,
-            "inputs": [
-                {
-                    "name": "owner",
-                    "type": "address"
-                },
-                {
-                    "name": "atBlock",
-                    "type": "uint256"
-                }
-            ],
-            "name": "getFreeSlotCount",
-            "outputs": [
-                {
-                    "name": "count",
-                    "type": "uint256"
-                }
-            ],
-            "type": "function"
-        },
-        {
-            "constant": true,
-            "inputs": [
-                {
-                    "name": "owner",
-                    "type": "address"
-                },
-                {
-                    "name": "atBlock",
-                    "type": "uint256"
-                },
-                {
-                    "name": "toBlock",
-                    "type": "uint256"
-                }
-            ],
-            "name": "calculateEstimatedCosts",
-            "outputs": [
-                {
-                    "name": "costs",
-                    "type": "uint256"
-                }
-            ],
-            "type": "function"
-        },
-        {
-            "constant": true,
-            "inputs": [],
-            "name": "blockCosts",
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "type": "function"
-        },
-        {
-            "constant": true,
-            "inputs": [
-                {
-                    "name": "owner",
-                    "type": "address"
-                },
-                {
-                    "name": "atBlock",
-                    "type": "uint256"
-                }
-            ],
-            "name": "getNextFreeSlot",
-            "outputs": [
-                {
-                    "name": "block",
-                    "type": "uint256"
-                }
-            ],
-            "type": "function"
-        },
-        {
-            "constant": false,
-            "inputs": [
-                {
-                    "name": "owner",
-                    "type": "address"
-                },
-                {
-                    "name": "name",
-                    "type": "string"
-                },
-                {
-                    "name": "lat",
-                    "type": "string"
-                },
-                {
-                    "name": "long",
-                    "type": "string"
-                }
-            ],
-            "name": "addPlace",
-            "outputs": [],
-            "type": "function"
-        },
-        {
-            "constant": true,
-            "inputs": [
-                {
-                    "name": "owner",
-                    "type": "address"
-                },
-                {
-                    "name": "parker",
-                    "type": "address"
-                }
-            ],
-            "name": "getReservedBlock",
-            "outputs": [
-                {
-                    "name": "block",
-                    "type": "uint256"
-                }
-            ],
-            "type": "function"
-        },
-        {
-            "constant": true,
-            "inputs": [
-                {
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "name": "places",
-            "outputs": [
-                {
-                    "name": "owner",
-                    "type": "address"
-                },
-                {
-                    "name": "name",
-                    "type": "string"
-                },
-                {
-                    "name": "latitude",
-                    "type": "string"
-                },
-                {
-                    "name": "longitude",
-                    "type": "string"
-                }
-            ],
-            "type": "function"
-        },
-        {
-            "constant": false,
-            "inputs": [
-                {
-                    "name": "owner",
-                    "type": "address"
-                },
-                {
-                    "name": "time",
-                    "type": "uint256"
-                }
-            ],
-            "name": "reserveSlot",
-            "outputs": [],
-            "type": "function"
-        },
-        {
-            "constant": true,
-            "inputs": [],
-            "name": "controller",
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "name": "_blockCosts",
-                    "type": "uint256"
-                }
-            ],
-            "type": "constructor"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "name": "place",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "name": "name",
-                    "type": "string"
-                },
-                {
-                    "indexed": false,
-                    "name": "latitude",
-                    "type": "string"
-                },
-                {
-                    "indexed": false,
-                    "name": "longitude",
-                    "type": "string"
-                }
-            ],
-            "name": "PlaceAdded",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "name": "place",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "name": "amount",
-                    "type": "uint256"
-                }
-            ],
-            "name": "SlotsAdded",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "name": "place",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "name": "parker",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "name": "reservedBlock",
-                    "type": "uint256"
-                }
-            ],
-            "name": "Reservation",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "name": "to",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "name": "amount",
-                    "type": "uint256"
-                }
-            ],
-            "name": "Transaction",
-            "type": "event"
-        }
-    ];
+
+    //initialize web3 and address of json rpc api from (needs running ethereum client allowing rpc)
+    if (typeof web3 === 'undefined') {
+        web3 = new Web3(new Web3.providers.HttpProvider(ETH_RPC_ADDRESS));
+    }
+    //contract definition and contract object
+    var parkingplaces = loadContract();
+
     //associative key-value arrays
     var markers = [];
     var placeInfos = [];
@@ -348,17 +23,10 @@ if (Meteor.isClient) {
     //selected block to estimate or parking
     var block;
 
-    //initialize web3 and address of json rpc api from (needs running ethereum client allowing rpc)
-    if (typeof web3 === 'undefined') {
-        web3 = new Web3(new Web3.providers.HttpProvider(ETH_RPC_ADDRESS));
-    }
-    //EthBlocks with last 50 block information auto updating
-    EthBlocks.init();
-    EthAccounts.init();
-    // load contract with abi at specified address
-    var parkingplaces = web3.eth.contract(CONTRACT_ABI).at(CONTRACT_ADDRESS);
-
     Meteor.startup(function () {
+        //EthBlocks with last 50 block information auto updating
+        EthBlocks.init();
+        EthAccounts.init();
         //load google package at start
         GoogleMaps.load();
     });
@@ -413,7 +81,7 @@ if (Meteor.isClient) {
                     web3.fromWei(estimatedCosts, "ether") + " ether?";
                 EthElements.Modal.question({
                     text: msg,
-                    ok: function(){
+                    ok: function () {
                         console.log("transaction hash: " + reservation(to, block, estimatedCosts));
                     },
                     cancel: true
@@ -656,7 +324,8 @@ if (Meteor.isClient) {
                 title: places[owner][1],
                 position: {lat: Number(places[owner][2]), lng: Number(places[owner][3])},
                 map: GoogleMaps.maps.map.instance,
-                animation: google.maps.Animation.DROP
+                animation: google.maps.Animation.DROP,
+                icon: getIcon(owner)
             });
             //add marker to key-value-array
             markers[owner] = marker;
@@ -735,5 +404,365 @@ if (Meteor.isClient) {
                 message: message
             }
         });
+    }
+
+    /**
+     * Get icon for marker corresponding to its place free slots percentage.
+     * @param owner the place address and key for all key value array
+     */
+    function getIcon(owner) {
+        var slots = parkingplaces.getSlotCount(owner);
+        var slots_free = parkingplaces.getFreeSlotCount(owner, EthBlocks.latest.number);
+        if (slots_free.equals(0)) {
+            return 'parking_icon_red.png';
+        }
+        var diffPercent = slots_free.dividedBy(slots).times(100).floor();
+        if (diffPercent.lessThan(10)) {
+            return 'parking_icon_yellow.png';
+        }
+        else {
+            return 'parking_icon_green.png';
+        }
+    }
+
+    /**
+     * load contract with ABI definition and contract address
+     * @returns {Contract} ethereum contract object
+     */
+    function loadContract() {
+        var contract_abi =
+            [
+                {
+                    "constant": true,
+                    "inputs": [
+                        {
+                            "name": "owner",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "getSlotCount",
+                    "outputs": [
+                        {
+                            "name": "count",
+                            "type": "uint256"
+                        }
+                    ],
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "owner",
+                            "type": "address"
+                        },
+                        {
+                            "name": "amount",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "addSlots",
+                    "outputs": [],
+                    "type": "function"
+                },
+                {
+                    "constant": true,
+                    "inputs": [
+                        {
+                            "name": "owner",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "existsPlace",
+                    "outputs": [
+                        {
+                            "name": "exists",
+                            "type": "bool"
+                        }
+                    ],
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [],
+                    "name": "close",
+                    "outputs": [],
+                    "type": "function"
+                },
+                {
+                    "constant": true,
+                    "inputs": [
+                        {
+                            "name": "owner",
+                            "type": "address"
+                        },
+                        {
+                            "name": "atBlock",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "getFreeSlotCount",
+                    "outputs": [
+                        {
+                            "name": "count",
+                            "type": "uint256"
+                        }
+                    ],
+                    "type": "function"
+                },
+                {
+                    "constant": true,
+                    "inputs": [
+                        {
+                            "name": "owner",
+                            "type": "address"
+                        },
+                        {
+                            "name": "atBlock",
+                            "type": "uint256"
+                        },
+                        {
+                            "name": "toBlock",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "calculateEstimatedCosts",
+                    "outputs": [
+                        {
+                            "name": "costs",
+                            "type": "uint256"
+                        }
+                    ],
+                    "type": "function"
+                },
+                {
+                    "constant": true,
+                    "inputs": [],
+                    "name": "blockCosts",
+                    "outputs": [
+                        {
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "type": "function"
+                },
+                {
+                    "constant": true,
+                    "inputs": [
+                        {
+                            "name": "owner",
+                            "type": "address"
+                        },
+                        {
+                            "name": "atBlock",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "getNextFreeSlot",
+                    "outputs": [
+                        {
+                            "name": "block",
+                            "type": "uint256"
+                        }
+                    ],
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "owner",
+                            "type": "address"
+                        },
+                        {
+                            "name": "name",
+                            "type": "string"
+                        },
+                        {
+                            "name": "lat",
+                            "type": "string"
+                        },
+                        {
+                            "name": "long",
+                            "type": "string"
+                        }
+                    ],
+                    "name": "addPlace",
+                    "outputs": [],
+                    "type": "function"
+                },
+                {
+                    "constant": true,
+                    "inputs": [
+                        {
+                            "name": "owner",
+                            "type": "address"
+                        },
+                        {
+                            "name": "parker",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "getReservedBlock",
+                    "outputs": [
+                        {
+                            "name": "block",
+                            "type": "uint256"
+                        }
+                    ],
+                    "type": "function"
+                },
+                {
+                    "constant": true,
+                    "inputs": [
+                        {
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "places",
+                    "outputs": [
+                        {
+                            "name": "owner",
+                            "type": "address"
+                        },
+                        {
+                            "name": "name",
+                            "type": "string"
+                        },
+                        {
+                            "name": "latitude",
+                            "type": "string"
+                        },
+                        {
+                            "name": "longitude",
+                            "type": "string"
+                        }
+                    ],
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "owner",
+                            "type": "address"
+                        },
+                        {
+                            "name": "time",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "reserveSlot",
+                    "outputs": [],
+                    "type": "function"
+                },
+                {
+                    "constant": true,
+                    "inputs": [],
+                    "name": "controller",
+                    "outputs": [
+                        {
+                            "name": "",
+                            "type": "address"
+                        }
+                    ],
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "name": "_blockCosts",
+                            "type": "uint256"
+                        }
+                    ],
+                    "type": "constructor"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": false,
+                            "name": "place",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "name",
+                            "type": "string"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "latitude",
+                            "type": "string"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "longitude",
+                            "type": "string"
+                        }
+                    ],
+                    "name": "PlaceAdded",
+                    "type": "event"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": false,
+                            "name": "place",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "amount",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "SlotsAdded",
+                    "type": "event"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": false,
+                            "name": "place",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "parker",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "reservedBlock",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "Reservation",
+                    "type": "event"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": false,
+                            "name": "to",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "amount",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "Transaction",
+                    "type": "event"
+                }
+            ];
+        return web3.eth.contract(contract_abi).at(CONTRACT_ADDRESS);
     }
 }
