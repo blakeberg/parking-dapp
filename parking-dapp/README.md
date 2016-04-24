@@ -1,19 +1,22 @@
 #User Interface for Dapp
-A Dapp has one or more contracts and an UI to interact with them. 
+A Dapp has one or more contracts and an UI to interact with them. **New Icons** (!)
 <br>For the contract of this Dapp see own section <https://github.com/blakeberg/parking-dapp>
 
 <table>
   <tr>
-    <td colspan="2">
+    <td colspan="3">
       <img src="https://raw.githubusercontent.com/blakeberg/parking-dapp/master/parking-dapp/ressources/pp-overview.png"/>
     </td>
   </tr>
   <tr>
    <td>
-    <img src="https://raw.githubusercontent.com/blakeberg/parking-dapp/master/parking-dapp/ressources/pp-modal-message.png" width="400"/>
+    <img src="https://raw.githubusercontent.com/blakeberg/parking-dapp/master/parking-dapp/ressources/pp-modal-message.png"/>
    </td>
-   <td align="right">
-    <img src="https://raw.githubusercontent.com/blakeberg/parking-dapp/master/parking-dapp/ressources/pp-modal-question.png" width="400"/>
+   <td>
+    <img src="https://raw.githubusercontent.com/blakeberg/parking-dapp/master/parking-dapp/ressources/pp-modal-question.png"/>
+   </td>
+   <td>
+    <img src="https://raw.githubusercontent.com/blakeberg/parking-dapp/master/parking-dapp/ressources/pp-new-icons.png"/>
    </td>
   </tr>
 </table>
