@@ -61,6 +61,6 @@ You should your own deployed contract cause this is volatile. Then you should ch
 
 ## Detailled description
 One screen with a short description of all elements.
-![](https://raw.githubusercontent.com/blakeberg/parking-dapp/master/parking-dapp/ressources/pp-overview-description.png)
+<img src="https://raw.githubusercontent.com/blakeberg/parking-dapp/master/parking-dapp/ressources/pp-overview-description.png"/>
 
 
