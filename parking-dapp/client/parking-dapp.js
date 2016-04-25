@@ -346,8 +346,10 @@ if (Meteor.isClient) {
         if (placeInfos[owner] !== undefined) {
             placeInfos[owner].setMap(null);
         }
-        //add info window to key-value-array
+        //add info window to key-value-array and update icon
         placeInfos[owner] = getPlaceInfowindow(owner);
+        marker.setIcon(getIcon(owner));
+        //add click listener to stop animation, update and open infowindow and update icon
         marker.addListener('click', function () {
             if (marker.getAnimation() !== null) {
                 marker.setAnimation(null);
@@ -356,7 +358,9 @@ if (Meteor.isClient) {
             if (placeInfos[owner] !== undefined) {
                 placeInfos[owner].setMap(null);
             }
+            //update and open
             placeInfos[owner] = getPlaceInfowindow(owner);
+            marker.setIcon(getIcon(owner));
             placeInfos[owner].open(GoogleMaps.maps.map.instance, marker);
         });
     }
@@ -382,7 +386,7 @@ if (Meteor.isClient) {
     }
 
     /**
-     * Centers and animates updated marker
+     * Change marker image depending on slot availability and centers plus animate marker
      * @param owner the place address and key for all key value array
      */
     function updateMarker(owner) {
@@ -412,12 +416,14 @@ if (Meteor.isClient) {
      */
     function getIcon(owner) {
         var slots = parkingplaces.getSlotCount(owner);
-        var slots_free = parkingplaces.getFreeSlotCount(owner, EthBlocks.latest.number);
+        var block = EthBlocks.latest.number;
+        var slots_free = parkingplaces.getFreeSlotCount(owner, block);
+        console.log(slots_free + " of " + slots + " at " + block);
         if (slots_free.equals(0)) {
             return 'parking_icon_red.png';
         }
         var diffPercent = slots_free.dividedBy(slots).times(100).floor();
-        if (diffPercent.lessThan(10)) {
+        if (diffPercent.lessThan(50)) {
             return 'parking_icon_yellow.png';
         }
         else {
