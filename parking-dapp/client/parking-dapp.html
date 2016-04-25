@@ -52,9 +52,30 @@
             </div>
             <h4>Your contract payments</h4>
             <small>
-                {{#each contractPayments}}
-                    <li>{{this}}</li>
-                {{/each}}
+                <div class="payment">
+                    <div class="payment-col left" title="sent ether from reservation transactions">
+                        {{#each contractPayments}}
+                            {{#if equals this.type 'receive'}}
+                                <li>
+                                    {{dapp_formatBalance this.value "0,0.00[000] UNIT"}} =
+                                    {{dapp_formatBalance this.value "0,0.00[0000] UNIT" "btc"}} =
+                                    {{dapp_formatBalance this.value "0,0.00 UNIT" "eur"}}
+                                </li>
+                            {{/if}}
+                        {{/each}}
+                    </div>
+                    <div class="payment-col right" title="received ether from reservation transactions">
+                        {{#each contractPayments}}
+                            {{#if equals this.type 'sent'}}
+                                <li>
+                                    {{dapp_formatBalance this.value "0,0.00[000] UNIT"}} =
+                                    {{dapp_formatBalance this.value "0,0.00[0000] UNIT" "btc"}} =
+                                    {{dapp_formatBalance this.value "0,0.00 UNIT" "eur"}}
+                                </li>
+                            {{/if}}
+                        {{/each}}
+                    </div>
+                </div>
             </small>
         </aside>
         <!-- content-->

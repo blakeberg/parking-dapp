@@ -52,8 +52,11 @@ if (Meteor.isClient) {
             return parkingplaces.blockCosts();
         },
         contractPayments: function () {
-            console.log(EthBlocks.latest.number + " at " + formatTS(EthBlocks.latest.timestamp));
+            console.log("current block: " + EthBlocks.latest.number);
             return payments;
+        },
+        equals: function (a, b) {
+            return a === b;
         },
         estimatedParkingCosts: function () {
             return parkingplaces.calculateEstimatedCosts(TemplateVar.getFrom('.to .dapp-address-input', 'value'),
@@ -169,10 +172,10 @@ if (Meteor.isClient) {
             function (error, result) {
                 if (!error) {
                     if (isOwnAccount(result.args.fromOrigin)) {
-                        payments.push("payed " + web3.fromWei(result.args.amount, "ether") + " ether");
+                        payments.push({type: 'sent', value: result.args.amount});
                     }
                     if (isOwnAccount(result.args.to)) {
-                        payments.push("got payback " + web3.fromWei(result.args.amount, "ether") + " ether");
+                        payments.push({type: 'receive', value: result.args.amount});
                     }
                 }
                 else {
@@ -416,9 +419,7 @@ if (Meteor.isClient) {
      */
     function getIcon(owner) {
         var slots = parkingplaces.getSlotCount(owner);
-        var block = EthBlocks.latest.number;
-        var slots_free = parkingplaces.getFreeSlotCount(owner, block);
-        console.log(slots_free + " of " + slots + " at " + block);
+        var slots_free = parkingplaces.getFreeSlotCount(owner, EthBlocks.latest.number);
         if (slots_free.equals(0)) {
             return 'parking_icon_red.png';
         }
