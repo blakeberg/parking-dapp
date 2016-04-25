@@ -79,7 +79,7 @@ if (Meteor.isClient) {
             event.preventDefault();
             var to = TemplateVar.getFrom('.to .dapp-address-input', 'value');
             var estimatedCosts = parkingplaces.calculateEstimatedCosts(to, EthBlocks.latest.number, block);
-            if (isDataValid(to, block) && validateBalance(estimatedCosts)) {
+            if (isDataValid(to, block, true) && validateBalance(estimatedCosts)) {
                 var msg = "Do you want to reserve place " + to + " until block " + block + " and pay " +
                     web3.fromWei(estimatedCosts, "ether") + " ether?";
                 EthElements.Modal.question({
@@ -96,7 +96,7 @@ if (Meteor.isClient) {
             event.preventDefault();
             var to = TemplateVar.getFrom('.to .dapp-address-input', 'value');
             // pass block number cause we need only to validate the address
-            if (isDataValid(to, EthBlocks.latest.number + 10)) {
+            if (isDataValid(to, EthBlocks.latest.number + 10, false)) {
                 validateParking(to);
             }
         },
@@ -251,7 +251,7 @@ if (Meteor.isClient) {
      * @param block number to reserve or estimate costs
      * @returns {boolean} true if data valid
      */
-    function isDataValid(to, block) {
+    function isDataValid(to, block, checkFreeSlots) {
         if (to === 'undefined') {
             showMessage("Data verification", "Please insert place address");
         }
@@ -264,7 +264,7 @@ if (Meteor.isClient) {
                     showMessage("Data verification", "Please insert a block number in future");
                 }
                 else {
-                    if (parkingplaces.getFreeSlotCount(to, EthBlocks.latest.number).equals(0)) {
+                    if (checkFreeSlots && parkingplaces.getFreeSlotCount(to, EthBlocks.latest.number).equals(0)) {
                         showMessage("Data verification", "Please wait for free slots or take another place");
                     }
                     else {
