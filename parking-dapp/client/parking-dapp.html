@@ -62,6 +62,7 @@
                             {{#if equals this.type 'receive'}}
                                 <li>
                                     {{dapp_formatBalance this.value "0,0.00[000] UNIT"}} =
+                                    {{dapp_formatBalance this.value "0,0.00[0000] UNIT" "btc"}} =
                                     {{dapp_formatBalance this.value "0,0.00 UNIT" "eur"}}
                                 </li>
                             {{/if}}
@@ -72,6 +73,7 @@
                             {{#if equals this.type 'sent'}}
                                 <li>
                                     {{dapp_formatBalance this.value "0,0.00[000] UNIT"}} =
+                                    {{dapp_formatBalance this.value "0,0.00[0000] UNIT" "btc"}} =
                                     {{dapp_formatBalance this.value "0,0.00 UNIT" "eur"}}
                                 </li>
                             {{/if}}
