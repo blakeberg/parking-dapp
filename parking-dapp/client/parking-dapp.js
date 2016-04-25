@@ -4,6 +4,13 @@ if (Meteor.isClient) {
     const MAP_ZOOM = 15;
     const CENTER = {lat: 53.143722, lng: 8.214059};
     const TIMEOUT_ANIMATION = 200;
+    //update all places and markers every x blocks
+    const REFRESH_INTERVALL = 5;
+    //threshold for slot capacity of places determine icons (all % in free slots)
+    const RED_THRESHOLD = 10; //under 10% free
+    const GREEN_THRESHOLD = 10; //equals or under 10% reserved
+    const YELLOW_THRESHOLD = 30; //under 30% free
+    //rpc address of ethereum client
     const ETH_RPC_ADDRESS = 'http://localhost:8545';
     //contract address
     const CONTRACT_ADDRESS = "0xded0a941b130e7617b5a3464cd43eab52e1f6793";
@@ -34,13 +41,14 @@ if (Meteor.isClient) {
     //template for block and time information
     Template.dapp.helpers({
         currentBlockNumber: function () {
+            updateAllMarker(EthBlocks.latest.number);
             return EthBlocks.latest.number;
+        },
+        currentBlockTime: function() {
+            return formatTS(EthBlocks.latest.timestamp);
         },
         accounts: function () {
             return EthAccounts.find().fetch();
-        },
-        currentBlockTime: function () {
-            return formatTS(EthBlocks.latest.timestamp);
         },
         contractController: function () {
             return parkingplaces.controller();
@@ -52,7 +60,8 @@ if (Meteor.isClient) {
             return parkingplaces.blockCosts();
         },
         contractPayments: function () {
-            console.log("current block: " + EthBlocks.latest.number);
+            // to call an update for each new block
+            EthBlocks.latest.number;
             return payments;
         },
         equals: function (a, b) {
@@ -96,7 +105,7 @@ if (Meteor.isClient) {
             event.preventDefault();
             var to = TemplateVar.getFrom('.to .dapp-address-input', 'value');
             // pass block number cause we need only to validate the address
-            if (isDataValid(to, EthBlocks.latest.number + 10, false)) {
+            if (isDataValid(to, EthBlocks.latest.number + REFRESH_INTERVALL, false)) {
                 validateParking(to);
             }
         },
@@ -135,7 +144,7 @@ if (Meteor.isClient) {
              */
             function (error, result) {
                 if (!error) {
-                    updateMarker(result.args.place);
+                    updateMarker(result.args.place, true, true);
                 }
                 else {
                     console.error(error);
@@ -150,7 +159,7 @@ if (Meteor.isClient) {
              */
             function (error, result) {
                 if (!error) {
-                    updateMarker(result.args.place);
+                    updateMarker(result.args.place, true, true);
                     if (isOwnAccount(result.args.parker)) {
                         showMessage("Your reservation was successful", "for place at " + result.args.place +
                             " from parker at " + result.args.parker + " until block number " +
@@ -177,6 +186,7 @@ if (Meteor.isClient) {
                     if (isOwnAccount(result.args.to)) {
                         payments.push({type: 'receive', value: result.args.amount});
                     }
+                    console.log(payments);
                 }
                 else {
                     console.error(error);
@@ -200,6 +210,19 @@ if (Meteor.isClient) {
             }
         });
     });
+
+    /**
+     * Update all marker in array without animating and centering
+     * @param currentBlock actual block number cause updating only every tenth block
+     */
+    function updateAllMarker(currentBlock) {
+        //only every tenth block
+        if ((currentBlock % REFRESH_INTERVALL) === 0) {
+            for (var key in markers) {
+                updateMarker(key, false, false);
+            }
+        }
+    }
 
     /**
      * Check if balance of selected account ist greater than amount
@@ -392,9 +415,13 @@ if (Meteor.isClient) {
      * Change marker image depending on slot availability and centers plus animate marker
      * @param owner the place address and key for all key value array
      */
-    function updateMarker(owner) {
-        GoogleMaps.maps.map.instance.setCenter(markers[owner].getPosition());
-        markers[owner].setAnimation(google.maps.Animation.BOUNCE);
+    function updateMarker(owner, toCenter, toAnimate) {
+        if (toCenter) {
+            GoogleMaps.maps.map.instance.setCenter(markers[owner].getPosition());
+        }
+        if (toAnimate) {
+            markers[owner].setAnimation(google.maps.Animation.BOUNCE);
+        }
         addMarkerInfo(owner);
     }
 
@@ -420,14 +447,14 @@ if (Meteor.isClient) {
     function getIcon(owner) {
         var slots = parkingplaces.getSlotCount(owner);
         var slots_free = parkingplaces.getFreeSlotCount(owner, EthBlocks.latest.number);
-        if (slots_free.equals(0)) {
+        var diffPercent = slots_free.dividedBy(slots).times(100).floor();
+        if (slots.equals(0) || slots_free.equals(0) || diffPercent.lessThan(RED_THRESHOLD)) {
             return 'parking_icon_red.png';
         }
-        var diffPercent = slots_free.dividedBy(slots).times(100).floor();
-        if (diffPercent.lessThan(50)) {
+        if (diffPercent.lessThan(YELLOW_THRESHOLD)) {
             return 'parking_icon_yellow.png';
         }
-        else {
+        if (diffPercent.greaterThanOrEqualTo(GREEN_THRESHOLD)) {
             return 'parking_icon_green.png';
         }
     }
