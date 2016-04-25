@@ -70,8 +70,6 @@ Show public methods, events and state variables type `parkingplaces`. For more d
 
 > Get-methods returns 0 if place at address not exists so you should check this before with method `existsPlace`.
 
-To show how many places exists in contract storage type `eth.getStorageAt(<contract address>,1)`
-
 **Transaction calls:**
 
 * close *(only controller)*
@@ -132,19 +130,18 @@ A place is unique by its address (owner) in this example address `eth.accounts[0
 2. Show place type `parkingplaces.places()` and you get `["0x0212a53b6224ea371dd4201a8123a73edc4893de", "Berlin", true, "52.5243700", "13.4105300"]` without slot informations
 3. Add second place for another address (instead of `eth.account[0]`)
 4. Show places by index type `parkingplaces.places(1)`
-5. Show count of places type `eth.getStorageAt(<contract address>, 2)`
-6. Validate if place exists type `parkingplaces.existsPlace(eth.accounts[0])`
-7. Add slots for place type `parkingplaces.addSlots(eth.accounts[0], 3, {from:eth.accounts[0], gas: 300000});`
-8. Show slot count for place type `parkingplaces.getSlotCount(eth.accounts[0])`
-9. Show free slot count for place and current block type `parkingplaces.getFreeSlotCount(eth.accounts[0], eth.blockNumber)` 
-10. Show free slot count for place and current block type `parkingplaces.getFreeSlotCount(eth.accounts[0], eth.blockNumber - 50)` gets 0 cause you added the slots with blocknumber of transaction.
+5. Validate if place exists type `parkingplaces.existsPlace(eth.accounts[0])`
+6. Add slots for place type `parkingplaces.addSlots(eth.accounts[0], 3, {from:eth.accounts[0], gas: 300000});`
+7. Show slot count for place type `parkingplaces.getSlotCount(eth.accounts[0])`
+8. Show free slot count for place and current block type `parkingplaces.getFreeSlotCount(eth.accounts[0], eth.blockNumber)` 
+9. Show free slot count for place and current block type `parkingplaces.getFreeSlotCount(eth.accounts[0], eth.blockNumber - 50)` gets 0 cause you added the slots with blocknumber of transaction.
 
 > You will get notifications for added places and slots if you have it registered before.
 
 #### Reservation and Payment
 A reservation can be applied on slots and save the address of parker and a blocknumber until the reservation is valid.
 
-1. To calculate estimated costs for a 15 blocks reservation at place type `parkingplaces.calculateEstimatedCosts(eth.accounts[0], eth.blockNumber, eth.blockNumber + 15)`
+1. To calculate estimated costs for a 15 blocks reservation at place type `parkingplaces.calculateEstimatedCosts(eth.blockNumber, eth.blockNumber + 15)`
 
 2. To reserve a slot for 15 blocks at place `eth.accounts[0]` type `parkingplaces.reserveSlot(eth.accounts[0], eth.blockNumber+15, {from:eth.accounts[0], gas: 300000, value: web3.toWei(500, "finney")});`
 
@@ -198,7 +195,6 @@ This is the initialization of this contract for the city Oldenburg in Germany wi
 	* Load JavaScript to create real parking places from its place account type `loadScript('path/to/CreateParkingPlaces.js');`
 	* Show balance for all accounts *(see above)*
 5. Now you can verify all places
-	* `eth.getStorageAt(<contract address>, 2)` must be 18 as count for places
 	* `parkingplaces.places(0)` to `parkingplaces.places(17)` shows a place
 	* `parkingplaces.existsPlace(eth.accounts[1])` to `parkingplaces.existsPlace(eth.accounts[18])` is true
 6. Add Slots to existing places
