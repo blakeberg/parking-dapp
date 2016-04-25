@@ -163,12 +163,10 @@ contract ParkingPlaces {
     
     /// @dev only if toBlock greater than atBlock else returns 0
     /// @notice calculate a reservation from intervall at block numbers 
-    /// @param owner unique place address 
     /// @param atBlock block number as start for calculation
     /// @param toBlock block number as end for calculation
     /// @return amount in wei to pay for block intervall
     function calculateEstimatedCosts (
-        address owner, 
         uint atBlock, 
         uint toBlock
     ) 
