@@ -58,9 +58,15 @@ You should your own deployed contract cause this is volatile. Then you should ch
     const MAP_ZOOM = 15;
     const CENTER = {lat: 53.143722, lng: 8.214059};
     const TIMEOUT_ANIMATION = 200;
+    //update all places and markers every x blocks
+    const REFRESH_INTERVALL = 5;
+    //threshold for slot capacity of places determine icons (all % in free slots)
+    const RED_THRESHOLD = 20; //under 20% free
+    const YELLOW_THRESHOLD = 50; //under 50% free
+    //rpc address of ethereum client
     const ETH_RPC_ADDRESS = 'http://localhost:8545';
     //contract address
-    const CONTRACT_ADDRESS = "0xded0a941b130e7617b5a3464cd43eab52e1f6793";
+    const CONTRACT_ADDRESS = "0xe9720023f118b31ad7b4ff5778db87e196210e11";
 
 ## Detailled description
 One screen with a short description of all elements.
