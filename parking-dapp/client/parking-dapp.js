@@ -63,9 +63,6 @@ if (Meteor.isClient) {
             EthBlocks.latest.number;
             return eventlogs;
         },
-        equals: function (a, b) {
-            return a === b;
-        },
         estimatedParkingCosts: function () {
             return parkingplaces.calculateEstimatedCosts(EthBlocks.latest.number, block);
         },
@@ -252,7 +249,7 @@ if (Meteor.isClient) {
      */
     function validateParking(to) {
         var from = TemplateVar.getFrom('.from .dapp-select-account', 'value');
-        var reservedBlock = parkingplaces.getReservedBlock(to, from);
+        var reservedBlock = parkingplaces.getReservedBlock(to, from)[0];
         if (reservedBlock.equals(0)) {
             showMessage("Parking validation", "You never had a parking reservation for this place");
         }
