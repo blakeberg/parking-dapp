@@ -54,31 +54,12 @@
             <div align="center" class="check">
                 <button type="submit" class="dapp-large">Check parking</button>
             </div>
-            <h4>Your contract payments</h4>
+            <h4>Your contract events</h4>
             <small>
                 <div class="payment">
-                    <div class="payment-col left" title="sent ether from reservation transactions">
-                        {{#each contractPayments}}
-                            {{#if equals this.type 'receive'}}
-                                <li>
-                                    {{dapp_formatBalance this.value "0,0.00[000] UNIT"}} =
-                                    {{dapp_formatBalance this.value "0,0.00[0000] UNIT" "btc"}} =
-                                    {{dapp_formatBalance this.value "0,0.00 UNIT" "eur"}}
-                                </li>
-                            {{/if}}
-                        {{/each}}
-                    </div>
-                    <div class="payment-col right" title="received ether from reservation transactions">
-                        {{#each contractPayments}}
-                            {{#if equals this.type 'sent'}}
-                                <li>
-                                    {{dapp_formatBalance this.value "0,0.00[000] UNIT"}} =
-                                    {{dapp_formatBalance this.value "0,0.00[0000] UNIT" "btc"}} =
-                                    {{dapp_formatBalance this.value "0,0.00 UNIT" "eur"}}
-                                </li>
-                            {{/if}}
-                        {{/each}}
-                    </div>
+                    {{#each contractLogs}}
+                        <li>{{this}}</li>
+                    {{/each}}
                 </div>
             </small>
         </aside>

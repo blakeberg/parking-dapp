@@ -12,7 +12,7 @@ if (Meteor.isClient) {
     //rpc address of ethereum client
     const ETH_RPC_ADDRESS = 'http://localhost:8545';
     //contract address
-    const CONTRACT_ADDRESS = "0xe9720023f118b31ad7b4ff5778db87e196210e11";
+    const CONTRACT_ADDRESS = "0x773ab39658c0dd7700e6499343a783f158c7c99f";
 
     //initialize web3 and address of json rpc api from (needs running ethereum client allowing rpc)
     if (typeof web3 === 'undefined') {
@@ -25,7 +25,7 @@ if (Meteor.isClient) {
     var markers = [];
     var placeInfos = [];
     var places = [];
-    var payments = [];
+    var eventlogs = [];
     //selected block to estimate or parking
     var block;
 
@@ -58,10 +58,10 @@ if (Meteor.isClient) {
         contractParkingCosts: function () {
             return parkingplaces.blockCosts();
         },
-        contractPayments: function () {
+        contractLogs: function () {
             // to call an update for each new block
             EthBlocks.latest.number;
-            return payments;
+            return eventlogs;
         },
         equals: function (a, b) {
             return a === b;
@@ -92,7 +92,9 @@ if (Meteor.isClient) {
                 EthElements.Modal.question({
                     text: msg,
                     ok: function () {
-                        console.log("transaction hash: " + reservation(to, block, estimatedCosts));
+                        reservation(to, block, estimatedCosts);
+                        eventlogs.push("reservation for place " + to.substring(0, 8) + "... with " +
+                            web3.fromWei(estimatedCosts, "ether") + " ether until block " + block + " was sent");
                     },
                     cancel: true
                 });
@@ -160,8 +162,9 @@ if (Meteor.isClient) {
                     updateMarker(result.args.place, true, true);
                     if (isOwnAccount(result.args.parker)) {
                         showMessage("Your reservation was successful", "for place at " + result.args.place +
-                            " from parker at " + result.args.parker + " until block number " +
-                            result.args.reservedBlock);
+                            " from parker " + result.args.parker + " until block number " + result.args.reservedBlock);
+                        eventlogs.push("reservation for place " + result.args.place.substring(0, 8) +
+                            "... until block number " + result.args.reservedBlock + " was successful");
                     }
                 }
                 else {
@@ -171,19 +174,17 @@ if (Meteor.isClient) {
         );
         parkingplaces.Transaction({}, '',
             /**
-             * Action for event Transaction of contract is to push sender and receiver details to payments array
-             * if reservation come with your account
+             * Action for event Transaction of contract is to push sender and receiver details to eventLogs array
+             * if transaction was started from your account
              * @param error first callback style
              * @param result with arguments (address fromOrigin, address to, uint amount)
              */
             function (error, result) {
                 if (!error) {
-                    //from = to are paybacks and handled as received
-                    if (isOwnAccount(result.args.fromOrigin) && result.args.fromOrigin !== result.args.to) {
-                        payments.push({type: 'sent', value: result.args.amount});
-                    }
-                    if (isOwnAccount(result.args.to)) {
-                        payments.push({type: 'receive', value: result.args.amount});
+                    if (isOwnAccount(result.args.from)) {
+                        eventlogs.push("transfered to place " +  result.args.to.substring(0,8) + "... " +
+                            web3.fromWei(result.args.transfered, "ether") + " ether for " + result.args.block +
+                            " blocks " + " with " + web3.fromWei(result.args.refund, "ether") + " ether refund");
                     }
                 }
                 else {
@@ -270,6 +271,7 @@ if (Meteor.isClient) {
      * if not show a corresponding message for all cases
      * @param to address of a place in contract
      * @param block number to reserve or estimate costs
+     * @param checkFreeSlots if validating free slots
      * @returns {boolean} true if data valid
      */
     function isDataValid(to, block, checkFreeSlots) {
@@ -403,7 +405,7 @@ if (Meteor.isClient) {
             '<li><b>longitude: </b>' + places[owner][3] + '</li>' +
             '<li><b>slots total: </b>' + parkingplaces.getSlotCount(owner) + '</li>' +
             '<li><b>slots free: </b>' + parkingplaces.getFreeSlotCount(owner, EthBlocks.latest.number) + '</li>' +
-            '<li><b>next free slot: </b>' + parkingplaces.getNextFreeSlot(owner, EthBlocks.latest.number) + '</li>';
+            '<li><b>next free slot: </b>' + parkingplaces.getNextFreeBlock(owner, EthBlocks.latest.number) + '</li>';
         return new google.maps.InfoWindow({
             content: slotInfo
         });
@@ -495,15 +497,15 @@ if (Meteor.isClient) {
             "type": "function"
         }, {
             "constant": true,
-            "inputs": [],
-            "name": "blockCosts",
-            "outputs": [{"name": "", "type": "uint256"}],
+            "inputs": [{"name": "owner", "type": "address"}],
+            "name": "getNextFreeBlock",
+            "outputs": [{"name": "block", "type": "uint256"}],
             "type": "function"
         }, {
             "constant": true,
-            "inputs": [{"name": "owner", "type": "address"}, {"name": "atBlock", "type": "uint256"}],
-            "name": "getNextFreeSlot",
-            "outputs": [{"name": "block", "type": "uint256"}],
+            "inputs": [],
+            "name": "blockCosts",
+            "outputs": [{"name": "", "type": "uint256"}],
             "type": "function"
         }, {
             "constant": false,
@@ -518,7 +520,7 @@ if (Meteor.isClient) {
             "constant": true,
             "inputs": [{"name": "owner", "type": "address"}, {"name": "parker", "type": "address"}],
             "name": "getReservedBlock",
-            "outputs": [{"name": "block", "type": "uint256"}],
+            "outputs": [{"name": "block", "type": "uint256"}, {"name": "index", "type": "uint256"}],
             "type": "function"
         }, {
             "constant": true,
@@ -531,7 +533,7 @@ if (Meteor.isClient) {
             "type": "function"
         }, {
             "constant": false,
-            "inputs": [{"name": "owner", "type": "address"}, {"name": "time", "type": "uint256"}],
+            "inputs": [{"name": "owner", "type": "address"}, {"name": "untilBlock", "type": "uint256"}],
             "name": "reserveSlot",
             "outputs": [],
             "type": "function"
@@ -574,11 +576,15 @@ if (Meteor.isClient) {
             "type": "event"
         }, {
             "anonymous": false,
-            "inputs": [{"indexed": false, "name": "fromOrigin", "type": "address"}, {
+            "inputs": [{"indexed": false, "name": "from", "type": "address"}, {
                 "indexed": false,
                 "name": "to",
                 "type": "address"
-            }, {"indexed": false, "name": "amount", "type": "uint256"}],
+            }, {"indexed": false, "name": "transfered", "type": "uint256"}, {
+                "indexed": false,
+                "name": "refund",
+                "type": "uint256"
+            }, {"indexed": false, "name": "block", "type": "uint256"}],
             "name": "Transaction",
             "type": "event"
         }];
