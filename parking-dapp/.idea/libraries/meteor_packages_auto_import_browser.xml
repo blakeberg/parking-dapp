@@ -18,9 +18,6 @@
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/ddp-client/1.2.1/web.browser/livedata_common.js" />
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/ddp-client/1.2.1/web.browser/client_convenience.js" />
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/ddp-client/1.2.1/web.browser/id_map.js" />
-        <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/fastclick/1.0.7/web.browser/pre.js" />
-        <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/fastclick/1.0.7/web.browser/post.js" />
-        <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/fastclick/1.0.7/web.browser/fastclick.js" />
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/frozeman_animation-helper/0.2.6/web.browser/packages/frozeman_animation-helper.js" />
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/frozeman_persistent-minimongo/0.1.8/web.browser/persistent-minimongo.js" />
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/frozeman_storage/0.1.9/web.browser/LocalStore.js" />
@@ -50,8 +47,6 @@
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/jquery/1.11.4/web.browser/jquery.js" />
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/jquery/1.11.4/web.browser/post.js" />
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/ecmascript-runtime/0.2.6/web.browser/.npm/package/node_modules/meteor-ecmascript-runtime/client.js" />
-        <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/launch-screen/1.0.4/web.browser/default-behavior.js" />
-        <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/launch-screen/1.0.4/web.browser/mobile-launch-screen.js" />
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/3stack_bignumber/2.0.0/web.browser/packages/3stack_bignumber.js" />
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/observe-sequence/1.0.7/web.browser/observe_sequence.js" />
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/localstorage/1.0.5/web.browser/localstorage.js" />
@@ -71,8 +66,6 @@
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/autoupdate/1.2.4/web.browser/autoupdate_client.js" />
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/random/1.0.5/web.browser/deprecated.js" />
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/random/1.0.5/web.browser/random.js" />
-        <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/reactive-dict/1.1.3/web.browser/reactive-dict.js" />
-        <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/reactive-dict/1.1.3/web.browser/migration.js" />
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/reactive-var/1.0.6/web.browser/reactive-var.js" />
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/reload/1.1.4/web.browser/deprecated.js" />
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/ethereum_accounts/0.3.10/web.browser/accounts.js" />
@@ -84,7 +77,6 @@
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/binary-heap/1.0.4/web.browser/min-max-heap.js" />
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/binary-heap/1.0.4/web.browser/min-heap.js" />
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/binary-heap/1.0.4/web.browser/max-heap.js" />
-        <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/session/1.1.1/web.browser/session.js" />
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/blaze/2.1.3/web.browser/dombackend.js" />
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/spacebars/1.0.7/web.browser/spacebars-runtime.js" />
         <item url="file://$USER_HOME$/AppData/Local/.meteor/packages/blaze/2.1.3/web.browser/view.js" />
@@ -148,9 +140,6 @@
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/ddp-client/1.2.1/web.browser/livedata_common.js" />
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/ddp-client/1.2.1/web.browser/client_convenience.js" />
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/ddp-client/1.2.1/web.browser/id_map.js" />
-      <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/fastclick/1.0.7/web.browser/pre.js" />
-      <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/fastclick/1.0.7/web.browser/post.js" />
-      <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/fastclick/1.0.7/web.browser/fastclick.js" />
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/frozeman_animation-helper/0.2.6/web.browser/packages/frozeman_animation-helper.js" />
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/frozeman_persistent-minimongo/0.1.8/web.browser/persistent-minimongo.js" />
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/frozeman_storage/0.1.9/web.browser/LocalStore.js" />
@@ -180,8 +169,6 @@
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/jquery/1.11.4/web.browser/jquery.js" />
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/jquery/1.11.4/web.browser/post.js" />
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/ecmascript-runtime/0.2.6/web.browser/.npm/package/node_modules/meteor-ecmascript-runtime/client.js" />
-      <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/launch-screen/1.0.4/web.browser/default-behavior.js" />
-      <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/launch-screen/1.0.4/web.browser/mobile-launch-screen.js" />
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/3stack_bignumber/2.0.0/web.browser/packages/3stack_bignumber.js" />
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/observe-sequence/1.0.7/web.browser/observe_sequence.js" />
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/localstorage/1.0.5/web.browser/localstorage.js" />
@@ -201,8 +188,6 @@
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/autoupdate/1.2.4/web.browser/autoupdate_client.js" />
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/random/1.0.5/web.browser/deprecated.js" />
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/random/1.0.5/web.browser/random.js" />
-      <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/reactive-dict/1.1.3/web.browser/reactive-dict.js" />
-      <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/reactive-dict/1.1.3/web.browser/migration.js" />
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/reactive-var/1.0.6/web.browser/reactive-var.js" />
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/reload/1.1.4/web.browser/deprecated.js" />
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/ethereum_accounts/0.3.10/web.browser/accounts.js" />
@@ -214,7 +199,6 @@
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/binary-heap/1.0.4/web.browser/min-max-heap.js" />
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/binary-heap/1.0.4/web.browser/min-heap.js" />
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/binary-heap/1.0.4/web.browser/max-heap.js" />
-      <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/session/1.1.1/web.browser/session.js" />
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/blaze/2.1.3/web.browser/dombackend.js" />
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/spacebars/1.0.7/web.browser/spacebars-runtime.js" />
       <root url="file://$USER_HOME$/AppData/Local/.meteor/packages/blaze/2.1.3/web.browser/view.js" />
