@@ -41,15 +41,27 @@ contract ParkingPlaces {
             _
     }
     
+    modifier allowReservation(address owner) {
+        if (owner == msg.sender || controller == msg.sender)
+            throw;
+        else
+            _
+    }
+    
     event PlaceAdded(
         address place, 
         string name, 
         string latitude, 
         string longitude);
-        
+
     event SlotsAdded(address place, uint amount);
     event Reservation(address place, address parker, uint reservedBlock);
-    event Transaction(address fromOrigin, address to, uint amount);
+    event Transaction(
+        address from, 
+        address to, 
+        uint transfered, 
+        uint refund, 
+        uint block);
     
     /// @dev msg.sender will set as controller
     /// @notice creation of this contract 
@@ -140,11 +152,10 @@ contract ParkingPlaces {
     }
     
     /// @dev if place not exists returns 0
-    /// @notice get block number for next free slot from block number
+    /// @notice get block number for next free slot
     /// @param owner unique place address
-    /// @param atBlock block number for searching next free slot
     /// @return block number for next free slot
-    function getNextFreeSlot(address owner, uint atBlock) 
+    function getNextFreeBlock(address owner) 
         constant
         public 
         returns (uint block) 
@@ -182,47 +193,56 @@ contract ParkingPlaces {
     /// @notice get the block number for a parker at place
     /// @param owner unique place address
     /// @param parker address to check for parking
-    /// @return block number which is reserved for parker
+    /// @return reserved block number and index in slots for place
     function getReservedBlock(address owner, address parker) 
         constant 
         public 
-        returns (uint block) 
+        returns (uint block, uint index) 
     {
         for (uint i = 0; i < placeOf[owner].slots.length; i++) {
             if (placeOf[owner].slots[i].parker == parker) 
-                return placeOf[owner].slots[i].reservedBlock;
+                return (placeOf[owner].slots[i].reservedBlock, i);
         }
     }
     
-    /// @dev calls internal functions for payment and transaction
-    /// @notice reserve a slot for a place and time fires events
+    /// @dev throws if place not exists, old time or sender = (place|controller)
+    /// @notice reserve a slot or extend existing reservation fires two events
     /// @param owner unique place address
-    /// @param time amount of blocks to reserve
-    function reserveSlot(address owner, uint time) public {
-        uint id = getNextFreeSlot(owner);
-        payReservation(owner, time);
-        placeOf[owner].slots[uint(id)].parker = msg.sender;
-        placeOf[owner].slots[uint(id)].reservedBlock = time;
-        Reservation(owner, msg.sender, time);
+    /// @param untilBlock until block number to reserve
+    function reserveSlot(address owner, uint untilBlock) 
+        allowReservation(owner)
+        public 
+    {
+        if (untilBlock <= block.number || !existsPlace(owner))
+            throw;
+        var (reservedBlock, reservedId) = getReservedBlock(owner, msg.sender);
+        uint id = 0;
+        uint toReserve = untilBlock - block.number;
+        if (reservedBlock == 0) {
+            id = getNextFreeSlot(owner);
+        }
+        else {
+            id = reservedId;
+            if (untilBlock >= reservedBlock && reservedBlock >= block.number) {
+                toReserve = untilBlock - reservedBlock;
+            }
+        }
+        payReservation(owner, msg.sender, toReserve);
+        placeOf[owner].slots[id].parker = msg.sender;
+        placeOf[owner].slots[id].reservedBlock = untilBlock;
+        Reservation(owner, msg.sender, untilBlock);
     }
     
     /// @dev called from reserveSlot and throws if given value is to low
     /// @param owner unique place address
-    /// @param time of blocks to pay
-    function payReservation(address owner, uint time) internal {
-        uint amount = (time - block.number) * blockCosts;
+    /// @param time number of blocks to pay
+    function payReservation(address owner, address parker, uint time) internal {
+        uint amount = time * blockCosts;
         if (msg.value < amount) 
             throw;
-        oneTransaction(owner, amount);
-        oneTransaction(msg.sender, msg.value - amount);
-    }
-    
-    /// @dev called from payReservation fires an event
-    /// @param to address which receives payment
-    /// @param amount amount to pay
-    function oneTransaction(address to, uint amount) internal {
-        to.send(amount);
-        Transaction(msg.sender, to, amount);
+        owner.send(amount);
+        parker.send(msg.value - amount);
+        Transaction(msg.sender, owner, amount, msg.value - amount, time);
     }
     
     /// @dev called from reserveSlot and throws if no free slot found
