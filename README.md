@@ -62,7 +62,7 @@ Show public methods, events and state variables type `parkingplaces`. For more d
 * controller
 * blockCosts
 * getSlotCount
-* getNextFreeSlot
+* getNextFreeBlock
 * getFreeSlotCount
 * existsPlace
 * getReservedBlock
@@ -75,9 +75,9 @@ Show public methods, events and state variables type `parkingplaces`. For more d
 * close *(only controller)*
 * addPlace *(only controller)*
 * addSlots *(only place owner)*
-* reserveSlot
+* reserveSlot *(not for controller or place owner)*
 
-> Transaction methods have no returns values but trigger events. You should also prove if an place for address exists. Only for slot reservation a suffiecient value is needed else a throw will reverts transaction.
+> Transaction methods have no returns values but trigger events. You should also prove if an place for address exists. Only for slot reservation a sufficient value is needed else a throw will reverts the transaction.
 
 You need an account to pay gas and/or transfer value `parkingplaces.<Methodname>([optional data], eth.accounts[0], 3, {from:eth.accounts[0], gas: 300000}, [optional value]);`
 
@@ -96,14 +96,14 @@ You need an account to pay gas and/or transfer value `parkingplaces.<Methodname>
 	    if (!error)
 	    	console.log("Place '" 
 	    	+ result.args.name + "' added from " + result.args.place + " at latitude " 
-	    	+ result.args.latitude + " and longitude " + result.args.longitude)
+	    	+ result.args.latitude + " and longitude " + result.args.longitude);
 	    });
 
 2. Add an Event for added slots notification:
 
 	    var eventSlotsAdded = parkingplaces.SlotsAdded({}, '', function(error, result){
 	    if (!error)
-	    	console.log(result.args.amount + " Slots added for place from " + result.args.place)
+	    	console.log(result.args.amount + " Slots added for place from " + result.args.place);
 	    });
 
 3. Add an Event for Reservation notification:
@@ -111,14 +111,15 @@ You need an account to pay gas and/or transfer value `parkingplaces.<Methodname>
 	    var eventReservation = parkingplaces.Reservation({}, '', function(error, result){
 	    if (!error)
 	    	console.log("Reservation for place at " + result.args.place + " reserved from parker at " 
-	    	+ result.args.parker + " until block number " + result.args.reservedBlock)
+	    	+ result.args.parker + " until block number " + result.args.reservedBlock);
 	    });
 
 4. Add an Event for Transaction notification:
 
 	    var eventTransaction = parkingplaces.Transaction({}, '', function(error, result){
 	    if (!error)
-	    	console.log("Payment to " + result.args.to + " with " + result.args.amount + " wei")
+	    	console.log("Payment from " + result.args.from + " to " + result.args.to + " for " + result.args.block + 
+			" blocks with " + result.args.transfered + " wei" + " and payback " + result.args.refund);
 	    });
 
 > You can see triggered events also in Event Logs of a transaction in blockchain explorer.
@@ -139,30 +140,21 @@ A place is unique by its address (owner) in this example address `eth.accounts[0
 > You will get notifications for added places and slots if you have it registered before.
 
 #### Reservation and Payment
-A reservation can be applied on slots and save the address of parker and a blocknumber until the reservation is valid.
+A reservation can be applied on slots and save the address of parker and a blocknumber until the reservation is valid. You can also extend an existing and active reservation and pay only the difference.
+
+> Notice that place owners and contract controller cannot make reservations so create a seperate account for a parker to make reservations.
 
 1. To calculate estimated costs for a 15 blocks reservation at place type `parkingplaces.calculateEstimatedCosts(eth.blockNumber, eth.blockNumber + 15)`
 
-2. To reserve a slot for 15 blocks at place `eth.accounts[0]` type `parkingplaces.reserveSlot(eth.accounts[0], eth.blockNumber+15, {from:eth.accounts[0], gas: 300000, value: web3.toWei(500, "finney")});`
+2. To reserve a slot for 15 blocks at place `eth.accounts[0]` type `parkingplaces.reserveSlot(eth.accounts[0], eth.blockNumber+15, {from:<parker account>, gas: 300000, value: web3.toWei(500, "finney")});`
 
-	> If there are no slots free or a insufficent value is given a throw will cause a rollback. 
+	> A rollback occurs if there are no slots free, place not exists or a insufficent value is given. 
 
-3. Get notifications from events like 
-
-    	[1]
-		Reservation for place at 0x3bee2a555de376981f9feb88b506062043c6a287 reserved from parker at 0x0212a53b6224ea371dd4201a8123a73edc4893de until block number 730416
-		[2]
-		Payment to 0x3bee2a555de376981f9feb88b506062043c6a287 with 130000000000000000 wei
-		[3]
-		Payment to 0x0212a53b6224ea371dd4201a8123a73edc4893de with 370000000000000000 wei
-
-	> [1] is your Reservation to block calculated from mining block (730403) so effective you reserved 13 blocks cause your eth.blockNumber was two blocks before.
-	> [2] is your payment of 130 finney.
-	> [3] is your payback of 370 finney.
+3. Get two notifications from events (one for reservation and one for transaction)
 
 4. Show free slot count for place and current block type `parkingplaces.getFreeSlotCount(eth.accounts[0], eth.blockNumber)` 
 5. Show free slot count for place 15 blocks in futura type `parkingplaces.getFreeSlotCount(eth.accounts[0], eth.blockNumber - 15)` gets all slots cause the added reservation is not valid at futura block.
-6. Validate parkers reservation type `parkingplaces.getReservedBlock(eth.accounts[0], eth.accounts[0]) - eth.blockNumber;` 
+6. Validate parkers reservation type `parkingplaces.getReservedBlock(eth.accounts[0], <parker account>)[0] - eth.blockNumber;` 
 	* if the value is equals or greater than 0 the reservation is valid
 	* if the value is equals eth.blockNumber but negativ the place or parker not exists
 	* otherwise the reservation is in past
