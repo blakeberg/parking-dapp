@@ -66,7 +66,7 @@ You should your own deployed contract cause this is volatile. Then you should ch
     //rpc address of ethereum client
     const ETH_RPC_ADDRESS = 'http://localhost:8545';
     //contract address
-    const CONTRACT_ADDRESS = "0xe9720023f118b31ad7b4ff5778db87e196210e11";
+    const CONTRACT_ADDRESS = "0x773ab39658c0dd7700e6499343a783f158c7c99f";
 
 ## Detailled description
 One screen with a short description of all elements.
