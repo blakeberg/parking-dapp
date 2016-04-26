@@ -1,5 +1,5 @@
 parkingplaces.addPlace(eth.accounts[1], "Caecilienschule, Haarenufer", "53.1411913", "8.2013645", {from:eth.accounts[0], gas: 300000});
-parkingplaces.addPlace(eth.accounts[2], "Herbartgymnasium, Herbartstrasse", "53.140104", "8.206351", {from:eth.accounts[0], gas: 300000});
+parkingplaces.addPlace(eth.accounts[2], "Herbartgymnasium, Herbartstrasse", "53.140137", "8.206319", {from:eth.accounts[0], gas: 300000});
 parkingplaces.addPlace(eth.accounts[3], "Theater", "53.138848", "8.210621", {from:eth.accounts[0], gas: 300000});
 parkingplaces.addPlace(eth.accounts[4], "Theaterwall", "53.137521", "8.211860", {from:eth.accounts[0], gas: 300000});
 parkingplaces.addPlace(eth.accounts[5], "Kasinoplatz", "53.138116", "8.213750", {from:eth.accounts[0], gas: 300000});
