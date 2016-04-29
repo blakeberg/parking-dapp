@@ -12,7 +12,7 @@ if (Meteor.isClient) {
     //rpc address of ethereum client
     const ETH_RPC_ADDRESS = 'http://localhost:8545';
     //contract address
-    const CONTRACT_ADDRESS = "0x773ab39658c0dd7700e6499343a783f158c7c99f";
+    const CONTRACT_ADDRESS = "0xad3d7d21862dfa1f9d91569240a9ed06ac276b4d";
 
     //initialize web3 and address of json rpc api from (needs running ethereum client allowing rpc)
     if (typeof web3 === 'undefined') {
@@ -51,9 +51,6 @@ if (Meteor.isClient) {
         },
         contractController: function () {
             return parkingplaces.controller();
-        },
-        contractAddress: function () {
-            return CONTRACT_ADDRESS;
         },
         contractParkingCosts: function () {
             return parkingplaces.blockCosts();
@@ -179,7 +176,7 @@ if (Meteor.isClient) {
             function (error, result) {
                 if (!error) {
                     if (isOwnAccount(result.args.from)) {
-                        eventlogs.push("transfered to place " +  result.args.to.substring(0,8) + "... " +
+                        eventlogs.push("transfered to place " + result.args.to.substring(0, 8) + "... " +
                             web3.fromWei(result.args.transfered, "ether") + " ether for " + result.args.block +
                             " blocks " + " with " + web3.fromWei(result.args.refund, "ether") + " ether refund");
                     }

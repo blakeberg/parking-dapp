@@ -1,4 +1,4 @@
-﻿/// @title Contract for Parking Places and Parking Reservations.
+/// @title Contract for Parking Places and Parking Reservations.
 /// @author Bjoern Lakeberg
 contract ParkingPlaces { 
     
