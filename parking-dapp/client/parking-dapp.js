@@ -5,7 +5,7 @@ if (Meteor.isClient) {
     const CENTER = {lat: 53.143722, lng: 8.214059};
     const TIMEOUT_ANIMATION = 200;
     //update all places and markers every x blocks
-    const REFRESH_INTERVALL = 5;
+    const REFRESH_INTERVALL = 20;
     //threshold for slot capacity of places determine icons (all % in free slots)
     const RED_THRESHOLD = 20; //under 20% free
     const YELLOW_THRESHOLD = 50; //under 50% free
