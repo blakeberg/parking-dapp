@@ -1,6 +1,3 @@
-
-======= ParkingPlaces =======
-User Documentation
 {
    "methods" : {
       "addPlace(address,string,string,string)" : {
