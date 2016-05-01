@@ -1,0 +1,38 @@
+
+======= ParkingPlaces =======
+User Documentation
+{
+   "methods" : {
+      "addPlace(address,string,string,string)" : {
+         "notice" : "add a new place fires an event"
+      },
+      "addSlots(address,uint256)" : {
+         "notice" : "add new slots to an existing place fires an event"
+      },
+      "calculateEstimatedCosts(uint256,uint256)" : {
+         "notice" : "calculate a reservation from intervall at block numbers "
+      },
+      "close()" : {
+         "notice" : "close contract only for controller"
+      },
+      "existsPlace(address)" : {
+         "notice" : "verify if place with unique address exists"
+      },
+      "getFreeSlotCount(address,uint256)" : {
+         "notice" : "count free slots for a place from given block number"
+      },
+      "getNextFreeBlock(address)" : {
+         "notice" : "get block number for next free slot"
+      },
+      "getReservedBlock(address,address)" : {
+         "notice" : "get the block number for a parker at place"
+      },
+      "getSlotCount(address)" : {
+         "notice" : "count all slots for a place inluding reserved ones "
+      },
+      "reserveSlot(address,uint256)" : {
+         "notice" : "reserve a slot or extend existing reservation fires two events"
+      }
+   }
+}
+

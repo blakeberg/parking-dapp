@@ -1,0 +1,81 @@
+
+======= ParkingPlaces =======
+Developer Documentation
+{
+   "author" : "Bjoern Lakeberg",
+   "methods" : {
+      "addPlace(address,string,string,string)" : {
+         "details" : "only controller can add a place, throws if value is given ",
+         "params" : {
+            "lat" : "latitude coordinate",
+            "long" : "longitude coordinate",
+            "name" : "name of the place",
+            "owner" : "unique place address"
+         }
+      },
+      "addSlots(address,uint256)" : {
+         "details" : "only place owner can add slots, throws if value is given ",
+         "params" : {
+            "amount" : "amount of slots to add",
+            "owner" : "unique place address"
+         }
+      },
+      "calculateEstimatedCosts(uint256,uint256)" : {
+         "details" : "only if toBlock greater than atBlock else returns 0",
+         "params" : {
+            "atBlock" : "block number as start for calculation",
+            "toBlock" : "block number as end for calculation"
+         },
+         "return" : "amount in wei to pay for block intervall"
+      },
+      "close()" : {
+         "details" : "closing contract send value to its creator"
+      },
+      "existsPlace(address)" : {
+         "details" : "used public and intern in addPlace und addSlots ",
+         "params" : {
+            "owner" : "unique place address"
+         },
+         "return" : "if place exists"
+      },
+      "getFreeSlotCount(address,uint256)" : {
+         "details" : "if place not exists or no slots free returns 0",
+         "params" : {
+            "atBlock" : "block number for searching free slots",
+            "owner" : "unique place address"
+         },
+         "return" : "count of free slots"
+      },
+      "getNextFreeBlock(address)" : {
+         "details" : "if place not exists returns 0",
+         "params" : {
+            "owner" : "unique place address"
+         },
+         "return" : "block number for next free slot"
+      },
+      "getReservedBlock(address,address)" : {
+         "details" : "if place not exists or parker not found returns 0",
+         "params" : {
+            "owner" : "unique place address",
+            "parker" : "address to check for parking"
+         },
+         "return" : "reserved block number and index in slots for place"
+      },
+      "getSlotCount(address)" : {
+         "details" : "if place not exists returns 0",
+         "params" : {
+            "owner" : "unique place address"
+         },
+         "return" : "count of all slots for a place"
+      },
+      "reserveSlot(address,uint256)" : {
+         "details" : "throws if place not exists, old time or sender = (place|controller)",
+         "params" : {
+            "owner" : "unique place address",
+            "untilBlock" : "until block number to reserve"
+         }
+      }
+   },
+   "title" : "Contract for Parking Places and Parking Reservations."
+}
+
