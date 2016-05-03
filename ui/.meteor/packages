@@ -8,15 +8,19 @@ meteor-base             # Packages every Meteor app needs to have
 blaze-html-templates    # Compile .html files into Meteor Blaze views
 jquery                  # Helpful client-side library
 tracker                 # Meteor's client-side reactive programming library
-
+mongo
 es5-shim                # ECMAScript 5 compatibility for older browsers.
 ecmascript              # Enable ECMAScript2015+ syntax in app code
 
+less
+standard-minifiers
+
 dburles:google-maps
+
 ethereum:web3
 ethereum:blocks
-less
 ethereum:dapp-styles
 ethereum:accounts
 ethereum:elements
-standard-minifiers
+
+
