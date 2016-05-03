@@ -5,18 +5,18 @@ A Dapp has one or more contracts and an UI to interact with them. **New Icons** 
 <table>
   <tr>
     <td colspan="3">
-      <img src="https://raw.githubusercontent.com/blakeberg/parking-dapp/master/parking-dapp/ressources/pp-overview.png"/>
+      <img src="https://raw.githubusercontent.com/blakeberg/parking-dapp/master/ui/ressources/pp-overview.png"/>
     </td>
   </tr>
   <tr>
    <td>
-    <img src="https://raw.githubusercontent.com/blakeberg/parking-dapp/master/parking-dapp/ressources/pp-modal-message.png"/>
+    <img src="https://raw.githubusercontent.com/blakeberg/parking-dapp/master/ui/ressources/pp-modal-message.png"/>
    </td>
    <td>
-    <img src="https://raw.githubusercontent.com/blakeberg/parking-dapp/master/parking-dapp/ressources/pp-modal-question.png"/>
+    <img src="https://raw.githubusercontent.com/blakeberg/parking-dapp/master/ui/ressources/pp-modal-question.png"/>
    </td>
    <td>
-    <img src="https://raw.githubusercontent.com/blakeberg/parking-dapp/master/parking-dapp/ressources/pp-new-icons.png"/>
+    <img src="https://raw.githubusercontent.com/blakeberg/parking-dapp/master/ui/ressources/pp-new-icons.png"/>
    </td>
   </tr>
 </table>
@@ -29,7 +29,7 @@ The Ethereum client should have started with RPC in **testnet** and available un
 > <br>The rpccorsdomain allows the dapp to accept communication to `http://localhost:8545`
 
 At once you need to clone this repository and an installed JavaScript App Platform Meteor.
-<br>Then you can start it in directory `./parking-dapp` with command `meteor`.
+<br>Then you can start it in directory `./ui` with command `meteor`.
 
 Run the dapp in browser call <http://localhost:3000> *(this should allowed via `--rpccorsdomain`)*
 
@@ -59,17 +59,17 @@ You should your own deployed contract cause this is volatile. Then you should ch
     const CENTER = {lat: 53.143722, lng: 8.214059};
     const TIMEOUT_ANIMATION = 200;
     //update all places and markers every x blocks
-    const REFRESH_INTERVALL = 5;
+    const REFRESH_INTERVALL = 20;
     //threshold for slot capacity of places determine icons (all % in free slots)
     const RED_THRESHOLD = 20; //under 20% free
     const YELLOW_THRESHOLD = 50; //under 50% free
     //rpc address of ethereum client
     const ETH_RPC_ADDRESS = 'http://localhost:8545';
     //contract address
-    const CONTRACT_ADDRESS = "0x773ab39658c0dd7700e6499343a783f158c7c99f";
+    const CONTRACT_ADDRESS = "0xad3d7d21862dfa1f9d91569240a9ed06ac276b4d";
 
 ## Detailled description
 One screen with a short description of all elements.
-<img src="https://raw.githubusercontent.com/blakeberg/parking-dapp/master/parking-dapp/ressources/pp-overview-description.png"/>
+<img src="https://raw.githubusercontent.com/blakeberg/parking-dapp/master/ui/ressources/pp-overview-description.png"/>
 
 
