@@ -1,4 +1,4 @@
-//single page application (SPA) needs access to google maps api and running local ethereum client
+//single page application (SPA) needs access to google maps  and running ethereum client
 if (Meteor.isClient) {
     //map constants
     const MAP_ZOOM = 15;
@@ -14,14 +14,14 @@ if (Meteor.isClient) {
     //contract address
     const CONTRACT_ADDRESS = "0xad3d7d21862dfa1f9d91569240a9ed06ac276b4d";
 
-    //initialize web3 and address of json rpc api from (needs running ethereum client allowing rpc)
+    //initialize web3 and address of json rpc api from running ethereum client
     if (typeof web3 === 'undefined') {
         web3 = new Web3(new Web3.providers.HttpProvider(ETH_RPC_ADDRESS));
     }
     //contract definition and contract object
     var parkingplaces = loadContract();
 
-    //associative key-value arrays
+    //associative key-value arrays (first three with same index)
     var markers = [];
     var placeInfos = [];
     var places = [];
@@ -29,6 +29,7 @@ if (Meteor.isClient) {
     //selected block to estimate or parking
     var block;
 
+    //call when meteor client starting
     Meteor.startup(function () {
         //EthBlocks with last 50 block information auto updating
         EthBlocks.init();
@@ -110,19 +111,18 @@ if (Meteor.isClient) {
         }
     });
 
-    //actions on creation - register contract events, load map and add markers foreach place in contract
+    //actions on template  creation - register contract events, load map and add markers foreach place in contract
     Template.dapp.onCreated(function () {
         //adding events from contract
         parkingplaces.PlaceAdded({}, '',
             /**
-             * Action for event PlaceAdded of contract is to add a marker on map of google maps api
+             * If contract event PlaceAdded add a marker on map of google maps api
              * @param error first callback style
              * @param result with arguments (address place, string name, string latitude, string longitude)
              */
             function (error, result) {
                 if (!error) {
-                    places[result.args.place] =
-                        [result.args.place, result.args.name, result.args.latitude, result.args.longitude];
+                    places[result.args.place] = [result.args.place, result.args.name, result.args.latitude, result.args.longitude];
                     addMarkerWithTimeout(result.args.place, TIMEOUT_ANIMATION);
                 }
                 else {
@@ -132,7 +132,7 @@ if (Meteor.isClient) {
         );
         parkingplaces.SlotsAdded({}, '',
             /**
-             * Action for event SlotsAdded of contract is to update and animate marker on map of google maps api
+             * If contract event PlaceAdded add a marker on map of google maps api
              * @param error first callback style
              * @param result with arguments (address place, uint amount)
              */
@@ -147,7 +147,7 @@ if (Meteor.isClient) {
         );
         parkingplaces.Reservation({}, '',
             /**
-             * Action for event Reservation of contract is to show modal dialog if reservation come with your account
+             * If contract event Reservation show modal dialog if reservation of your account
              * @param error first callback style
              * @param result with arguments (address place, address parker, uint reservedBlock)
              */
@@ -168,7 +168,7 @@ if (Meteor.isClient) {
         );
         parkingplaces.Transaction({}, '',
             /**
-             * Action for event Transaction of contract is to push sender and receiver details to eventLogs array
+             * If contract event Transaction push sender and receiver to eventLogs array
              * if transaction was started from your account
              * @param error first callback style
              * @param result with arguments (address fromOrigin, address to, uint amount)
@@ -206,7 +206,7 @@ if (Meteor.isClient) {
 
     /**
      * Update all marker in array without animating and centering
-     * @param currentBlock actual block number cause updating only every tenth block
+     * @param currentBlock actual block number cause updating only every x.th block
      */
     function updateAllMarker(currentBlock) {
         //only every tenth block
@@ -241,7 +241,7 @@ if (Meteor.isClient) {
 
 
     /**
-     * Validate the parking for selected address and a place to show the result in a message
+     * Validate parking for selected address and a place to show the result in a message
      * @param to the address of the parking place
      */
     function validateParking(to) {
@@ -281,7 +281,8 @@ if (Meteor.isClient) {
                     showMessage("Data verification", "Please insert a block number in future");
                 }
                 else {
-                    if (checkFreeSlots && parkingplaces.getFreeSlotCount(to, EthBlocks.latest.number).equals(0)) {
+                    if (checkFreeSlots && parkingplaces.getFreeSlotCount(to,
+                            EthBlocks.latest.number).equals(0)) {
                         showMessage("Data verification", "Please wait for free slots or take another place");
                     }
                     else {
@@ -294,7 +295,7 @@ if (Meteor.isClient) {
     }
 
     /**
-     * Make a reservation if account for selected address is unlocked for place until future block.
+     * Make a reservation until future block for place if selected account is unlocked.
      * @param to the address of the parking place
      * @param block the block until which to reserve
      * @param value the costs in wei to pay
@@ -355,7 +356,7 @@ if (Meteor.isClient) {
     }
 
     /**
-     * Clear all listener for an existing marker, create a new click listener with actual infowindow
+     * Clear all listener for existing marker, create new click listener with infowindow
      * @param owner the place address and key for all key value array
      */
     function addMarkerInfo(owner) {
