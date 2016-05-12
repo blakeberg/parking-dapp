@@ -1,11 +1,31 @@
 if (Meteor.isClient) {
 
+    var eventlogs = [];
+    eventlogs.push("entry1");
+    eventlogs.push("entry2");
+    eventlogs.push("...");
+
     Template.dapp.helpers({
         currentBlockNumber: function () {
             return "XXXXXX (BigNumber)";
         },
         currentBlockTime: function () {
             return "XX:XX:XX (formatted UNIX Timestamp)";
+        },
+        accounts: function () {
+            return "hexhex";
+        },
+        contractController: function () {
+            return "hexhex";
+        },
+        contractParkingCosts: function () {
+            return "0.0012 ETHER";
+        },
+        contractLogs: function () {
+            return eventlogs;
+        },
+        estimatedParkingCosts: function () {
+            return "0.0012 ETHER";
         }
     });
 

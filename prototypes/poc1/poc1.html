@@ -16,22 +16,22 @@
         <!-- aside -->
         <aside class="dapp-aside">
             <h2>an Ethereum decentralized application</h2>
-            Controller address: hexhex
+            Controller address: <b>{{contractController}}</b>
             <br>
             Select your account to pay for a parking place reservation:
             <div class="from">
-                hexhex
+                <b>{{accounts}}</b>
             </div>
             <br>
             <small>
-                currency rates for 1 ETH
+                <b>currency rates for 1 ETH</b>
             </small>
             <br>
-            You have to pay X.XXXX ETHER per parking block.
+            You have to pay <b>{{contractParkingCosts}}</b> per parking block.
             <br><br>
             Insert place address:
             <div class="to">
-                XXXXXX (BigNumber)
+                <b>hexhex</b>
             </div>
             <div align="right">Reserve until block....
                 <input type="number" name="block" pattern="[0-9]*" class="block"
@@ -39,7 +39,7 @@
             </div>
             <br>
             <small>Your estimated costs is
-                currency rates for estimation costs
+                <b>{{estimatedParkingCosts}}</b>
             </small>
             <button type="submit" class="dapp-block-button">Park now</button>
             <div align="center" class="check">
@@ -48,15 +48,15 @@
             <h4>Your contract events</h4>
             <small>
                 <div class="payment">
-                    <li>Log entry 1</li>
-                    <li>Log entry 2</li>
-                    <li>...</li>
+                    {{#each contractLogs}}
+                        <li><b>{{this}}</b></li>
+                    {{/each}}
                 </div>
             </small>
         </aside>
         <!-- content-->
         <main class="dapp-content">
-            Google Map here
+            <b>Google Map here</b>
         </main>
     </div>
 </template>
