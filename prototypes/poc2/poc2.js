@@ -56,24 +56,12 @@ if (Meteor.isClient) {
     'click .dapp-large'(event) {
       event.preventDefault();
       var to = TemplateVar.getFrom('.to .dapp-address-input', 'value');
-      EthElements.Modal.show({
-        template: 'modal_info',
-        data: {
-          header: "click .dapp-large",
-          message: "click event for .dapp-large (account choosen: " + to + ")"
-        }
-      });
+      showMessage("click .dapp-large", "click event for .dapp-large (account choosen: " + to + ")");
     },
     'change .block'(event) {
       event.preventDefault();
       block = event.target.value;
-      EthElements.Modal.show({
-        template: 'modal_info',
-        data: {
-          header: "change .block",
-          message: "change event for .block (block input: " + block + ")"
-        }
-      });
+      showMessage("change .block", "change event for .block (block input: " + block + ")");
     }
   });
 
@@ -83,6 +71,16 @@ if (Meteor.isClient) {
     var minutes = "0" + date.getMinutes();
     var seconds = "0" + date.getSeconds();
     return hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+  }
+
+  function showMessage(header, message) {
+    EthElements.Modal.show({
+      template: 'modal_info',
+      data: {
+        header: header,
+        message: message
+      }
+    });
   }
 }
 
