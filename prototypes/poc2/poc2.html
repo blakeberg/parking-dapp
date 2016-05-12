@@ -1,0 +1,71 @@
+<head>
+    <title>POC2: Decentralized Application for Parking in Oldenburg (GER)</title>
+</head>
+
+<body>
+{{> dapp}}
+{{> dapp_modalPlaceholder}}
+</body>
+
+<template name="dapp">
+    <header class="dapp-header">
+        <h1>POC2: Parking Places in Oldenburg</h1>
+        <h3>last block {{currentBlockNumber}} at {{currentBlockTime}}</h3>
+    </header>
+
+    <div class="dapp-flex-content">
+        <!-- aside -->
+        <aside class="dapp-aside">
+            <h2>an Ethereum decentralized application</h2>
+            Controller address:
+            {{> dapp_addressInput placeholder=contractController disabled="true"}}
+            <br>
+            Select your account to pay for a parking place reservation:
+            <div class="from">
+                {{> dapp_selectAccount accounts=accounts showAccountTypes=true}}
+            </div>
+            <br>
+            <small>
+                {{dapp_formatBalance "1000000000000000000" "0,0.00[000] UNIT"}} =
+                {{dapp_formatBalance "1000000000000000000" "0,0.00[0000] UNIT" "btc"}} =
+                {{dapp_formatBalance "1000000000000000000" "0,0.00 UNIT" "eur"}}
+            </small>
+            <br>
+            You have to pay <b>{{contractParkingCosts}}</b> per parking block.
+            <br><br>
+            Insert place address:
+            <div class="to">
+                {{> dapp_addressInput placeholder="copy paste address from place info of map markers" }}
+            </div>
+            <div align="right">Reserve until block....
+                <input type="number" name="block" pattern="[0-9]*" class="block"
+                       placeholder="type block number in future" min={{currentBlockNumber}}>
+            </div>
+            <br>
+            <small>Your estimated costs is
+                <b>{{estimatedParkingCosts}}</b>
+            </small>
+            <button type="submit" class="dapp-block-button">Park now</button>
+            <div align="center" class="check">
+                <button type="submit" class="dapp-large">Check parking</button>
+            </div>
+            <h4>Your contract events</h4>
+            <small>
+                <div class="payment">
+                    {{#each contractLogs}}
+                        <li><b>{{this}}</b></li>
+                    {{/each}}
+                </div>
+            </small>
+        </aside>
+        <!-- content-->
+        <main class="dapp-content">
+            <b>Google Map here</b>
+        </main>
+    </div>
+</template>
+
+<template name="modal_info">
+    <h1>{{header}}</h1>
+    <p>{{message}}</p>
+</template>
