@@ -3,9 +3,13 @@
 </head>
 
 <body>
+{{> dapp}}
+</body>
+
+<template name="dapp">
     <header class="dapp-header">
         <h1>POC1: Parking Places in Oldenburg</h1>
-        <h3>last block XXXXXX (BigNumber) at XX:XX:XX (formatted UNIX Timestamp)</h3>
+        <h3>last block {{currentBlockNumber}} at {{currentBlockTime}}</h3>
     </header>
 
     <div class="dapp-flex-content">
@@ -55,4 +59,4 @@
             Google Map here
         </main>
     </div>
-</body>
+</template>
