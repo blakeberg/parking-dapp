@@ -1,5 +1,6 @@
 if (Meteor.isClient) {
 
+  var block;
   var eventlogs = [];
   eventlogs.push("entry1");
   eventlogs.push("entry2");
@@ -43,31 +44,34 @@ if (Meteor.isClient) {
   Template.dapp.events({
     'click .dapp-block-button'(event) {
       event.preventDefault();
+      var to = TemplateVar.getFrom('.to .dapp-address-input', 'value');
       EthElements.Modal.question({
         text: "click .dapp-block-button",
         ok: function () {
-          console.log("clicked ok modal question on click event for .dapp-block-button")
+          console.log("click event for .dapp-block-button (account choosen: " + to + ")");
         },
         cancel: true
       });
     },
     'click .dapp-large'(event) {
       event.preventDefault();
+      var to = TemplateVar.getFrom('.to .dapp-address-input', 'value');
       EthElements.Modal.show({
         template: 'modal_info',
         data: {
           header: "click .dapp-large",
-          message: "modal info on click event for .dapp-large"
+          message: "click event for .dapp-large (account choosen: " + to + ")"
         }
       });
     },
     'change .block'(event) {
       event.preventDefault();
+      block = event.target.value;
       EthElements.Modal.show({
         template: 'modal_info',
         data: {
           header: "change .block",
-          message: "modal info on change event for .block"
+          message: "change event for .block (block input: " + block + ")"
         }
       });
     }
