@@ -9,6 +9,11 @@ if (Meteor.isClient) {
   //rpc address of ethereum client
   const ETH_RPC_ADDRESS = 'http://localhost:8545';
 
+  //initialize web3 and address of json rpc api from running ethereum client
+  if (typeof web3 === 'undefined') {
+    web3 = new Web3(new Web3.providers.HttpProvider(ETH_RPC_ADDRESS));
+  }
+
   //associative key-value arrays (first three with same index)
   var markers = [];
   var places = [];
@@ -24,11 +29,6 @@ if (Meteor.isClient) {
   places["0x02b75fd3c9a0a023894556b22c9fc51001fd437b"] = ["0x02b75fd3c9a0a023894556b22c9fc51001fd437b", "Herbartgymnasium, Herbartstrasse", "53.140137", "8.206319"];
   places["0x3bee2a555de376981f9feb88b506062043c6a287"] = ["0x3bee2a555de376981f9feb88b506062043c6a287", "Caecilienschule, Haarenufer", "53.1411913", "8.2013645"];
   places["0x39e08a9d9bad38b42307ea04cb350980f85c51f9"] = ["0x39e08a9d9bad38b42307ea04cb350980f85c51f9", "Theater", "53.138848", "8.210621"];
-
-  //initialize web3 and address of json rpc api from running ethereum client
-  if (typeof web3 === 'undefined') {
-    web3 = new Web3(new Web3.providers.HttpProvider(ETH_RPC_ADDRESS));
-  }
 
   //call when meteor client starting
   Meteor.startup(function () {
