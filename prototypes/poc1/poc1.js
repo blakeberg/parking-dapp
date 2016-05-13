@@ -1,3 +1,4 @@
+//single page application (SPA) needs access to google maps  and running ethereum client
 if (Meteor.isClient) {
 
     var eventlogs = [];
@@ -5,6 +6,7 @@ if (Meteor.isClient) {
     eventlogs.push("entry2");
     eventlogs.push("...");
 
+    //template for block and time information
     Template.dapp.helpers({
         currentBlockNumber: function () {
             return "XXXXXX (BigNumber)";
@@ -29,6 +31,7 @@ if (Meteor.isClient) {
         }
     });
 
+    //handle events from dapp template
     Template.dapp.events({
         'click .dapp-block-button'(event) {
             event.preventDefault();
