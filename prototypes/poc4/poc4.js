@@ -11,6 +11,13 @@ if (Meteor.isClient) {
   //contract address
   const CONTRACT_ADDRESS = "0xad3d7d21862dfa1f9d91569240a9ed06ac276b4d";
 
+  //initialize web3 and address of json rpc api from running ethereum client
+  if (typeof web3 === 'undefined') {
+    web3 = new Web3(new Web3.providers.HttpProvider(ETH_RPC_ADDRESS));
+  }
+  //contract definition and contract object
+  var parkingplaces = loadContract();
+
   //associative key-value arrays (first three with same index)
   var markers = [];
   var places = [];
@@ -22,13 +29,6 @@ if (Meteor.isClient) {
   eventlogs.push("entry1");
   eventlogs.push("entry2");
   eventlogs.push("...");
-
-  //initialize web3 and address of json rpc api from running ethereum client
-  if (typeof web3 === 'undefined') {
-    web3 = new Web3(new Web3.providers.HttpProvider(ETH_RPC_ADDRESS));
-  }
-  //contract definition and contract object
-  var parkingplaces = loadContract();
 
   //call when meteor client starting
   Meteor.startup(function () {
