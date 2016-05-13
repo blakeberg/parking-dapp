@@ -205,6 +205,38 @@ if (Meteor.isClient) {
   }
 
   /**
+   * Validate parking for selected address and a place to show the result in a message
+   * @param to the address of the parking place
+   */
+  function validateParking(to) {
+    var from = TemplateVar.getFrom('.from .dapp-select-account', 'value');
+    var reservedBlock = parkingplaces.getReservedBlock(to, from)[0];
+    if (reservedBlock.equals(0)) {
+      showMessage("Parking validation", "You never had a parking reservation for this place");
+    }
+    else {
+      if (reservedBlock.greaterThan(EthBlocks.latest.number)) {
+        showMessage("Parking validation", "You can park for place until block number " + reservedBlock);
+      }
+      else {
+        showMessage("Parking validation", "Your parking for place is over since block number " + reservedBlock);
+      }
+    }
+  }
+
+  /**
+   * Make a reservation until future block for place if selected account is unlocked.
+   * @param to the address of the parking place
+   * @param block the block until which to reserve
+   * @param value the costs in wei to pay
+   * @returns {*} the hash of the transaction
+   */
+  function reservation(to, block, value) {
+    var from = TemplateVar.getFrom('.from .dapp-select-account', 'value');
+    return parkingplaces.reserveSlot(to, block, {from: from, gas: 300000, value: value});
+  }
+
+  /**
    * Formatting of an unix timestamp to a 'hh:mm:ss' string
    * @param timestamp the unix timestamp of a block in seconds
    * @returns {string} time formatted as hh:mm:ss
