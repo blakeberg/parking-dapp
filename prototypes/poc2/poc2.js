@@ -2,6 +2,11 @@
 if (Meteor.isClient) {
   //rpc address of ethereum client
   const ETH_RPC_ADDRESS = 'http://localhost:8545';
+
+  //initialize web3 and address of json rpc api from running ethereum client
+  if (typeof web3 === 'undefined') {
+    web3 = new Web3(new Web3.providers.HttpProvider(ETH_RPC_ADDRESS));
+  }
   
   var eventlogs = [];
   //selected block to estimate or parking
@@ -9,11 +14,6 @@ if (Meteor.isClient) {
   eventlogs.push("entry1");
   eventlogs.push("entry2");
   eventlogs.push("...");
-
-  //initialize web3 and address of json rpc api from running ethereum client
-  if (typeof web3 === 'undefined') {
-    web3 = new Web3(new Web3.providers.HttpProvider(ETH_RPC_ADDRESS));
-  }
 
   //call when meteor client starting
   Meteor.startup(function () {
