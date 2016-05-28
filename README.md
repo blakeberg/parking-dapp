@@ -14,7 +14,7 @@ The code `ParkingPlaces.sol` were published under `/contracts` in this repositor
 **A docker container "geth-node" with geth and solc is already available**. You can also take the online compiler and connect them to local Ethereum client or docker container.
 
 Starting Ethereum client for solidity online compiler.
-`geth --testnet --rpc --rpcaddr "0.0.0.0" --rpccordomain "*"`
+`geth --testnet --rpc --rpcaddr "0.0.0.0" --rpccorsdomain "*"`
 
 Look for installed compiler with `geth attach` and `eth.getCompilers()`. If there is no compiler `['Solidity']` install a compiler and link its path with `admin.setSolc("path/to/solc")`.
 
